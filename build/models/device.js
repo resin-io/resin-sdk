@@ -75,6 +75,9 @@ limitations under the License.
    */
 
   exports.ensureSupervisorCompatibility = ensureSupervisorCompatibility = Promise.method(function(version, minVersion) {
+    if (!semver.valid(version)) {
+      throw new Error("Invalid supervisor version: " + version);
+    }
     if (semver.lt(version, minVersion)) {
       throw new Error("Incompatible supervisor version: " + version + " - must be >= " + minVersion);
     }

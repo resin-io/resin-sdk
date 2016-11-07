@@ -65,6 +65,9 @@ CONTAINER_ACTION_ENDPOINT_TIMEOUT = 50000
 # });
 ###
 exports.ensureSupervisorCompatibility = ensureSupervisorCompatibility = Promise.method (version, minVersion) ->
+	if not semver.valid(version)
+		throw new Error("Invalid supervisor version: #{version}")
+
 	if semver.lt(version, minVersion)
 		throw new Error("Incompatible supervisor version: #{version} - must be >= #{minVersion}")
 

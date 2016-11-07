@@ -351,6 +351,22 @@ describe 'SDK Integration Tests', ->
 						m.chai.expect(manifest.slug).to.equal('raspberry-pi')
 					.nodeify(done)
 
+			describe 'resin.models.device.ensureSupervisorCompatibility()', ->
+				MIN_VERSION = '1.0.0'
+
+				it 'should be fulfilled if supervisor version is compatible', ->
+					promise = resin.models.device.ensureSupervisorCompatibility('1.1.0', MIN_VERSION)
+					m.chai.expect(promise).to.be.fulfilled
+
+				it 'should be rejected if supervisor version is not compatible', ->
+					promise = resin.models.device.ensureSupervisorCompatibility('0.9.0', MIN_VERSION)
+					m.chai.expect(promise).to.be.rejected
+
+				it 'should be rejected if supervisor version is not semver-compatible', ->
+					INVALID_VERSION = 'InvalidSemver'
+					promise = resin.models.device.ensureSupervisorCompatibility(INVALID_VERSION, MIN_VERSION)
+					m.chai.expect(promise).to.be.rejectedWith("Invalid supervisor version: #{INVALID_VERSION}")
+
 		describe 'given no applications', ->
 
 			describe 'Application Model', ->
