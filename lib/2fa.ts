@@ -21,7 +21,6 @@ const get2fa = function(
 	deps: InjectedDependenciesParam,
 	opts: InjectedOptionsParam,
 ) {
-	const { auth, request } = deps;
 	const { apiUrl } = opts;
 
 	/**
@@ -53,7 +52,7 @@ const get2fa = function(
 	function isEnabled(
 		callback?: (error?: Error, result?: boolean) => void,
 	): Promise<boolean> {
-		return auth
+		return deps.auth
 			.needs2FA()
 			.then(twoFactorRequired => twoFactorRequired != null)
 			.asCallback(callback);
@@ -88,7 +87,7 @@ const get2fa = function(
 	function isPassed(
 		callback?: (error?: Error, result?: boolean) => void,
 	): Promise<boolean> {
-		return auth
+		return deps.auth
 			.needs2FA()
 			.then(twoFactorRequired => !twoFactorRequired)
 			.asCallback(callback);
@@ -116,7 +115,7 @@ const get2fa = function(
 		code: string,
 		callback?: (error?: Error) => void,
 	): Promise<void> {
-		return request
+		return deps.request
 			.send({
 				method: 'POST',
 				url: '/auth/totp/verify',
@@ -124,7 +123,7 @@ const get2fa = function(
 				body: { code },
 			})
 			.get('body')
-			.then(auth.setKey)
+			.then(deps.auth.setKey)
 			.asCallback(callback);
 	}
 

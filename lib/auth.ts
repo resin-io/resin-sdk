@@ -24,7 +24,6 @@ const getAuth = function(
 	deps: InjectedDependenciesParam,
 	opts: InjectedOptionsParam,
 ) {
-	const { auth: authBase, pubsub, request } = deps;
 	const { apiUrl } = opts;
 
 	const normalizeAuthError = function(err: errors.BalenaRequestError) {
@@ -43,25 +42,22 @@ const getAuth = function(
 	): T =>
 		function() {
 			return fn
-				.apply(authBase, arguments)
-				.finally(() => pubsub.publish(eventName));
+				.apply(deps.auth, arguments)
+				.finally(() => deps.pubsub.publish(eventName));
 		} as T;
 
 	const auth = {
-		...authBase,
-		setKey: wrapAuthFn('auth.keyChange', authBase.setKey),
-		removeKey: wrapAuthFn('auth.keyChange', authBase.removeKey),
-	} as typeof authBase;
+		...deps.auth,
+		setKey: wrapAuthFn('auth.keyChange', deps.auth.setKey),
+		removeKey: wrapAuthFn('auth.keyChange', deps.auth.removeKey),
+	} as typeof deps.auth;
 
 	/**
 	 * @namespace balena.auth.twoFactor
 	 * @memberof balena.auth
 	 */
 	const twoFactor = (require('./2fa').default as typeof _get2faModel)(
-		{
-			...deps,
-			auth,
-		},
+		deps,
 		opts,
 	);
 
@@ -78,7 +74,7 @@ const getAuth = function(
 			if (userDetailsCache) {
 				return userDetailsCache;
 			}
-			return request
+			return deps.request
 				.send<WhoamiResult>({
 					method: 'GET',
 					url: '/user/v1/whoami',
@@ -171,7 +167,7 @@ const getAuth = function(
 		},
 		callback?: (error?: Error, result?: string) => void,
 	): Promise<string> {
-		return request
+		return deps.request
 			.send<string>({
 				method: 'POST',
 				baseUrl: apiUrl,
@@ -447,7 +443,7 @@ const getAuth = function(
 		},
 		callback?: (error?: Error, result?: string) => void,
 	): Promise<string> {
-		return request
+		return deps.request
 			.send({
 				method: 'POST',
 				url: '/user/register',
