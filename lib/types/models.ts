@@ -443,9 +443,6 @@ export interface OrganizationPrivateDeviceTypeAccess {
 	has_private_access_to__device_type: NavigationResource<DeviceType>;
 }
 
-export type DeviceWithImageInstalls = Device &
-	Required<Pick<Device, 'image_install' | 'gateway_download'>>;
-
 export interface SupervisorRelease {
 	created_at: string;
 	id: number;
