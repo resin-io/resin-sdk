@@ -395,8 +395,8 @@ export interface Device {
 	device_tag: ReverseNavigationResource<DeviceTag>;
 	manages__device: ReverseNavigationResource<Device>;
 	service_install: ReverseNavigationResource<ServiceInstall>;
-	image_install?: ReverseNavigationResource<ImageInstall>;
-	gateway_download?: ReverseNavigationResource<GatewayDownload>;
+	image_install: ReverseNavigationResource<ImageInstall>;
+	gateway_download: ReverseNavigationResource<GatewayDownload>;
 }
 
 export interface CpuArchitecture {
