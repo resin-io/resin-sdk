@@ -1,16 +1,12 @@
 import type { DeviceOverallStatus } from './device-overall-status';
 export type { DeviceOverallStatus } from './device-overall-status';
 import { Contract } from './contract';
-import { JWTUser } from './jwt';
 import type {
 	PineDeferred,
 	NavigationResource,
 	OptionalNavigationResource,
 	ReverseNavigationResource,
 } from '../../typings/pinejs-client-core';
-
-// TODO: Drop in the next major
-export { SocialServiceAccount } from './jwt';
 
 export interface ResourceTypeMap {
 	api_key: ApiKey;
@@ -105,8 +101,7 @@ export interface RecoveryTwoFactor {
 	belongs_to__user: NavigationResource<User>;
 }
 
-// TODO: Stop (confusingly) extending the UserJWT in the next major version
-export interface User extends JWTUser {
+export interface User {
 	id: number;
 	actor: number;
 	created_at: string;
