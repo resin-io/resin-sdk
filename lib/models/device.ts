@@ -1251,38 +1251,6 @@ const getDeviceModel = function (
 		},
 
 		/**
-		 * @summary Get supported device types
-		 * @name getSupportedDeviceTypes
-		 * @public
-		 * @function
-		 * @memberof balena.models.device
-		 *
-		 * @deprecated use balena.models.deviceType.getAll
-		 * @fulfil {String[]} - supported device types
-		 * @returns {Promise}
-		 *
-		 * @example
-		 * balena.models.device.getSupportedDeviceTypes().then(function(supportedDeviceTypes) {
-		 * 	supportedDeviceTypes.forEach(function(supportedDeviceType) {
-		 * 		console.log('Balena supports:', supportedDeviceType);
-		 * 	});
-		 * });
-		 *
-		 * @example
-		 * balena.models.device.getSupportedDeviceTypes(function(error, supportedDeviceTypes) {
-		 * 	if (error) throw error;
-		 *
-		 * 	supportedDeviceTypes.forEach(function(supportedDeviceType) {
-		 * 		console.log('Balena supports:', supportedDeviceType);
-		 * 	});
-		 * });
-		 */
-		getSupportedDeviceTypes: async (): Promise<string[]> => {
-			const deviceTypes = await configModel().getDeviceTypes();
-			return deviceTypes.map((dt) => dt.name);
-		},
-
-		/**
 		 * @summary Get a device manifest by slug
 		 * @name getManifestBySlug
 		 * @public

@@ -46,28 +46,6 @@ describe('Device Model', function () {
 	givenInitialOrganization(before);
 
 	describe('given no applications', function () {
-		parallel('balena.models.device.getSupportedDeviceTypes()', function () {
-			it('should return a non empty array', async () => {
-				const deviceTypes =
-					await balena.models.device.getSupportedDeviceTypes();
-				expect(Array.isArray(deviceTypes)).to.be.true;
-				return expect(deviceTypes).to.not.have.length(0);
-			});
-
-			it('should return all valid display names', async () => {
-				const deviceTypes =
-					await balena.models.device.getSupportedDeviceTypes();
-				await Promise.all(
-					deviceTypes.map(async (deviceType) => {
-						const deviceSlug = await balena.models.deviceType.getSlugByName(
-							deviceType,
-						);
-						expect(deviceSlug).to.be.a('string');
-					}),
-				);
-			});
-		});
-
 		parallel('balena.models.device.getManifestBySlug()', function () {
 			it('should become the manifest if the slug is valid', async () => {
 				const manifest = await balena.models.device.getManifestBySlug(

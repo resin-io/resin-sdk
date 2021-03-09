@@ -214,7 +214,6 @@ const sdk = fromSharedOptions();
             * [.move(uuidOrId, applicationNameOrSlugOrId)](#balena.models.device.move) ⇒ <code>Promise</code>
             * [.restartApplication(uuidOrId)](#balena.models.device.restartApplication) ⇒ <code>Promise</code>
             * [.getSupervisorTargetState(uuidOrId)](#balena.models.device.getSupervisorTargetState) ⇒ <code>Promise</code>
-            * ~~[.getSupportedDeviceTypes()](#balena.models.device.getSupportedDeviceTypes) ⇒ <code>Promise</code>~~
             * ~~[.getManifestBySlug(slugOrName)](#balena.models.device.getManifestBySlug) ⇒ <code>Promise</code>~~
             * [.getManifestByApplication(nameOrSlugOrId)](#balena.models.device.getManifestByApplication) ⇒ <code>Promise</code>
             * [.generateUniqueKey()](#balena.models.device.generateUniqueKey) ⇒ <code>String</code>
@@ -583,7 +582,6 @@ balena.models.device.get(123).catch(function (error) {
         * [.move(uuidOrId, applicationNameOrSlugOrId)](#balena.models.device.move) ⇒ <code>Promise</code>
         * [.restartApplication(uuidOrId)](#balena.models.device.restartApplication) ⇒ <code>Promise</code>
         * [.getSupervisorTargetState(uuidOrId)](#balena.models.device.getSupervisorTargetState) ⇒ <code>Promise</code>
-        * ~~[.getSupportedDeviceTypes()](#balena.models.device.getSupportedDeviceTypes) ⇒ <code>Promise</code>~~
         * ~~[.getManifestBySlug(slugOrName)](#balena.models.device.getManifestBySlug) ⇒ <code>Promise</code>~~
         * [.getManifestByApplication(nameOrSlugOrId)](#balena.models.device.getManifestByApplication) ⇒ <code>Promise</code>
         * [.generateUniqueKey()](#balena.models.device.generateUniqueKey) ⇒ <code>String</code>
@@ -2454,7 +2452,6 @@ balena.models.application.revokeSupportAccess('MyApp', function(error) {
     * [.move(uuidOrId, applicationNameOrSlugOrId)](#balena.models.device.move) ⇒ <code>Promise</code>
     * [.restartApplication(uuidOrId)](#balena.models.device.restartApplication) ⇒ <code>Promise</code>
     * [.getSupervisorTargetState(uuidOrId)](#balena.models.device.getSupervisorTargetState) ⇒ <code>Promise</code>
-    * ~~[.getSupportedDeviceTypes()](#balena.models.device.getSupportedDeviceTypes) ⇒ <code>Promise</code>~~
     * ~~[.getManifestBySlug(slugOrName)](#balena.models.device.getManifestBySlug) ⇒ <code>Promise</code>~~
     * [.getManifestByApplication(nameOrSlugOrId)](#balena.models.device.getManifestByApplication) ⇒ <code>Promise</code>
     * [.generateUniqueKey()](#balena.models.device.generateUniqueKey) ⇒ <code>String</code>
@@ -3876,33 +3873,6 @@ balena.models.device.getSupervisorTargetState(123).then(function(state) {
 balena.models.device.getSupervisorTargetState('7cf02a6', function(error, state) {
 	if (error) throw error;
 	console.log(state);
-});
-```
-<a name="balena.models.device.getSupportedDeviceTypes"></a>
-
-##### ~~device.getSupportedDeviceTypes() ⇒ <code>Promise</code>~~
-***Deprecated***
-
-**Kind**: static method of [<code>device</code>](#balena.models.device)  
-**Summary**: Get supported device types  
-**Access**: public  
-**Fulfil**: <code>String[]</code> - supported device types  
-**Example**  
-```js
-balena.models.device.getSupportedDeviceTypes().then(function(supportedDeviceTypes) {
-	supportedDeviceTypes.forEach(function(supportedDeviceType) {
-		console.log('Balena supports:', supportedDeviceType);
-	});
-});
-```
-**Example**  
-```js
-balena.models.device.getSupportedDeviceTypes(function(error, supportedDeviceTypes) {
-	if (error) throw error;
-
-	supportedDeviceTypes.forEach(function(supportedDeviceType) {
-		console.log('Balena supports:', supportedDeviceType);
-	});
 });
 ```
 <a name="balena.models.device.getManifestBySlug"></a>
