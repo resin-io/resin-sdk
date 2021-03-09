@@ -214,7 +214,6 @@ const sdk = fromSharedOptions();
             * [.move(uuidOrId, applicationNameOrSlugOrId)](#balena.models.device.move) ⇒ <code>Promise</code>
             * [.restartApplication(uuidOrId)](#balena.models.device.restartApplication) ⇒ <code>Promise</code>
             * [.getSupervisorTargetState(uuidOrId)](#balena.models.device.getSupervisorTargetState) ⇒ <code>Promise</code>
-            * ~~[.getDisplayName(deviceTypeSlug)](#balena.models.device.getDisplayName) ⇒ <code>Promise</code>~~
             * ~~[.getDeviceSlug(deviceTypeName)](#balena.models.device.getDeviceSlug) ⇒ <code>Promise</code>~~
             * ~~[.getSupportedDeviceTypes()](#balena.models.device.getSupportedDeviceTypes) ⇒ <code>Promise</code>~~
             * ~~[.getManifestBySlug(slugOrName)](#balena.models.device.getManifestBySlug) ⇒ <code>Promise</code>~~
@@ -585,7 +584,6 @@ balena.models.device.get(123).catch(function (error) {
         * [.move(uuidOrId, applicationNameOrSlugOrId)](#balena.models.device.move) ⇒ <code>Promise</code>
         * [.restartApplication(uuidOrId)](#balena.models.device.restartApplication) ⇒ <code>Promise</code>
         * [.getSupervisorTargetState(uuidOrId)](#balena.models.device.getSupervisorTargetState) ⇒ <code>Promise</code>
-        * ~~[.getDisplayName(deviceTypeSlug)](#balena.models.device.getDisplayName) ⇒ <code>Promise</code>~~
         * ~~[.getDeviceSlug(deviceTypeName)](#balena.models.device.getDeviceSlug) ⇒ <code>Promise</code>~~
         * ~~[.getSupportedDeviceTypes()](#balena.models.device.getSupportedDeviceTypes) ⇒ <code>Promise</code>~~
         * ~~[.getManifestBySlug(slugOrName)](#balena.models.device.getManifestBySlug) ⇒ <code>Promise</code>~~
@@ -2458,7 +2456,6 @@ balena.models.application.revokeSupportAccess('MyApp', function(error) {
     * [.move(uuidOrId, applicationNameOrSlugOrId)](#balena.models.device.move) ⇒ <code>Promise</code>
     * [.restartApplication(uuidOrId)](#balena.models.device.restartApplication) ⇒ <code>Promise</code>
     * [.getSupervisorTargetState(uuidOrId)](#balena.models.device.getSupervisorTargetState) ⇒ <code>Promise</code>
-    * ~~[.getDisplayName(deviceTypeSlug)](#balena.models.device.getDisplayName) ⇒ <code>Promise</code>~~
     * ~~[.getDeviceSlug(deviceTypeName)](#balena.models.device.getDeviceSlug) ⇒ <code>Promise</code>~~
     * ~~[.getSupportedDeviceTypes()](#balena.models.device.getSupportedDeviceTypes) ⇒ <code>Promise</code>~~
     * ~~[.getManifestBySlug(slugOrName)](#balena.models.device.getManifestBySlug) ⇒ <code>Promise</code>~~
@@ -3882,36 +3879,6 @@ balena.models.device.getSupervisorTargetState(123).then(function(state) {
 balena.models.device.getSupervisorTargetState('7cf02a6', function(error, state) {
 	if (error) throw error;
 	console.log(state);
-});
-```
-<a name="balena.models.device.getDisplayName"></a>
-
-##### ~~device.getDisplayName(deviceTypeSlug) ⇒ <code>Promise</code>~~
-***Deprecated***
-
-**Kind**: static method of [<code>device</code>](#balena.models.device)  
-**Summary**: Get display name for a device  
-**Access**: public  
-**Fulfil**: <code>String</code> - device display name  
-**See**: [getSupportedDeviceTypes](#balena.models.device.getSupportedDeviceTypes) for a list of supported devices  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| deviceTypeSlug | <code>String</code> | device type slug |
-
-**Example**  
-```js
-balena.models.device.getDisplayName('raspberry-pi').then(function(deviceTypeName) {
-	console.log(deviceTypeName);
-	// Raspberry Pi
-});
-```
-**Example**  
-```js
-balena.models.device.getDisplayName('raspberry-pi', function(error, deviceTypeName) {
-	if (error) throw error;
-	console.log(deviceTypeName);
-	// Raspberry Pi
 });
 ```
 <a name="balena.models.device.getDeviceSlug"></a>

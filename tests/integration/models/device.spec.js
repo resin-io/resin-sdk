@@ -46,23 +46,6 @@ describe('Device Model', function () {
 	givenInitialOrganization(before);
 
 	describe('given no applications', function () {
-		parallel('balena.models.device.getDisplayName()', function () {
-			it('should get the display name for a known slug', function () {
-				const promise = balena.models.device.getDisplayName('raspberry-pi2');
-				return expect(promise).to.eventually.equal('Raspberry Pi 2');
-			});
-
-			it('should get the display name given a device type alias', function () {
-				const promise = balena.models.device.getDisplayName('raspberrypi2');
-				return expect(promise).to.eventually.equal('Raspberry Pi 2');
-			});
-
-			it('should eventually be undefined if the slug is invalid', function () {
-				const promise = balena.models.device.getDisplayName('asdf');
-				return expect(promise).to.eventually.be.undefined;
-			});
-		});
-
 		parallel('balena.models.device.getDeviceSlug()', function () {
 			it('should eventually be the slug from a display name', function () {
 				const promise = balena.models.device.getDeviceSlug('Raspberry Pi 2');

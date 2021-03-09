@@ -1251,48 +1251,6 @@ const getDeviceModel = function (
 		},
 
 		/**
-		 * @summary Get display name for a device
-		 * @name getDisplayName
-		 * @public
-		 * @function
-		 * @memberof balena.models.device
-		 *
-		 * @deprecated use balena.models.deviceType.getName
-		 * @see {@link balena.models.device.getSupportedDeviceTypes} for a list of supported devices
-		 *
-		 * @param {String} deviceTypeSlug - device type slug
-		 * @fulfil {String} - device display name
-		 * @returns {Promise}
-		 *
-		 * @example
-		 * balena.models.device.getDisplayName('raspberry-pi').then(function(deviceTypeName) {
-		 * 	console.log(deviceTypeName);
-		 * 	// Raspberry Pi
-		 * });
-		 *
-		 * @example
-		 * balena.models.device.getDisplayName('raspberry-pi', function(error, deviceTypeName) {
-		 * 	if (error) throw error;
-		 * 	console.log(deviceTypeName);
-		 * 	// Raspberry Pi
-		 * });
-		 */
-		getDisplayName: async (
-			deviceTypeSlug: string,
-		): Promise<string | undefined> => {
-			try {
-				const { name } = await exports.getManifestBySlug(deviceTypeSlug);
-				return name;
-			} catch (error) {
-				if (error instanceof errors.BalenaInvalidDeviceType) {
-					return;
-				}
-
-				throw error;
-			}
-		},
-
-		/**
 		 * @summary Get device slug
 		 * @name getDeviceSlug
 		 * @public
