@@ -1251,48 +1251,6 @@ const getDeviceModel = function (
 		},
 
 		/**
-		 * @summary Get device slug
-		 * @name getDeviceSlug
-		 * @public
-		 * @function
-		 * @memberof balena.models.device
-		 *
-		 * @deprecated use balena.models.deviceType.getSlugByName
-		 * @see {@link balena.models.device.getSupportedDeviceTypes} for a list of supported devices
-		 *
-		 * @param {String} deviceTypeName - device type name
-		 * @fulfil {String} - device slug name
-		 * @returns {Promise}
-		 *
-		 * @example
-		 * balena.models.device.getDeviceSlug('Raspberry Pi').then(function(deviceTypeSlug) {
-		 * 	console.log(deviceTypeSlug);
-		 * 	// raspberry-pi
-		 * });
-		 *
-		 * @example
-		 * balena.models.device.getDeviceSlug('Raspberry Pi', function(error, deviceTypeSlug) {
-		 * 	if (error) throw error;
-		 * 	console.log(deviceTypeSlug);
-		 * 	// raspberry-pi
-		 * });
-		 */
-		getDeviceSlug: async (
-			deviceTypeName: string,
-		): Promise<string | undefined> => {
-			try {
-				const { slug } = await exports.getManifestBySlug(deviceTypeName);
-				return slug;
-			} catch (error) {
-				if (error instanceof errors.BalenaInvalidDeviceType) {
-					return;
-				}
-
-				throw error;
-			}
-		},
-
-		/**
 		 * @summary Get supported device types
 		 * @name getSupportedDeviceTypes
 		 * @public

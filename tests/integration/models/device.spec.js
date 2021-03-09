@@ -46,28 +46,6 @@ describe('Device Model', function () {
 	givenInitialOrganization(before);
 
 	describe('given no applications', function () {
-		parallel('balena.models.device.getDeviceSlug()', function () {
-			it('should eventually be the slug from a display name', function () {
-				const promise = balena.models.device.getDeviceSlug('Raspberry Pi 2');
-				return expect(promise).to.eventually.equal('raspberry-pi2');
-			});
-
-			it('should eventually be the slug if passing already a slug', function () {
-				const promise = balena.models.device.getDeviceSlug('raspberry-pi2');
-				return expect(promise).to.eventually.equal('raspberry-pi2');
-			});
-
-			it('should eventually be undefined if the display name is invalid', function () {
-				const promise = balena.models.device.getDeviceSlug('asdf');
-				return expect(promise).to.eventually.be.undefined;
-			});
-
-			it('should eventually be the slug if passing an alias', function () {
-				const promise = balena.models.device.getDeviceSlug('raspberrypi2');
-				return expect(promise).to.eventually.equal('raspberry-pi2');
-			});
-		});
-
 		parallel('balena.models.device.getSupportedDeviceTypes()', function () {
 			it('should return a non empty array', async () => {
 				const deviceTypes =
@@ -81,7 +59,7 @@ describe('Device Model', function () {
 					await balena.models.device.getSupportedDeviceTypes();
 				await Promise.all(
 					deviceTypes.map(async (deviceType) => {
-						const deviceSlug = await balena.models.device.getDeviceSlug(
+						const deviceSlug = await balena.models.deviceType.getSlugByName(
 							deviceType,
 						);
 						expect(deviceSlug).to.be.a('string');
