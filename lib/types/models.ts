@@ -661,8 +661,6 @@ export interface Subscription {
 	is_for__organization: NavigationResource<Organization>;
 	is_for__plan: NavigationResource<Plan>;
 	subscription_addon_discount: ReverseNavigationResource<SubscriptionAddonDiscount>;
-	/** @deprecated */
-	discounts__plan_addon: ReverseNavigationResource<SubscriptionAddonDiscount>;
 	subscription_prepaid_addon: ReverseNavigationResource<SubscriptionPrepaidAddon>;
 }
 
