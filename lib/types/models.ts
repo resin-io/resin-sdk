@@ -62,8 +62,6 @@ export interface ResourceTypeMap {
 	user: User;
 	user__has__public_key: SSHKey;
 	user__has_direct_access_to__application: UserHasDirectAccessToApplication;
-	/** @deprecated in favor of user_application_membership */
-	user__is_member_of__application: ApplicationMembership;
 	user_application_membership: ApplicationMembership;
 }
 
@@ -108,8 +106,6 @@ export interface User {
 	username: string;
 
 	organization_membership: ReverseNavigationResource<OrganizationMembership>;
-	/** @deprecated in favor of user_application_membership */
-	user__is_member_of__application: ReverseNavigationResource<ApplicationMembership>;
 	user_application_membership: ReverseNavigationResource<ApplicationMembership>;
 	team_membership: ReverseNavigationResource<TeamMembership>;
 	has_direct_access_to__application: ReverseNavigationResource<Application>;
@@ -183,11 +179,7 @@ export interface Application {
 	owns__release: ReverseNavigationResource<Release>;
 	is_depended_on_by__application: ReverseNavigationResource<Application>;
 	is_directly_accessible_by__user: ReverseNavigationResource<User>;
-	/** includes__user */
-	/** @deprecated in favor of user_application_membership */
-	user__is_member_of__application: ReverseNavigationResource<ApplicationMembership>;
 	user_application_membership: ReverseNavigationResource<ApplicationMembership>;
-	/** is_accessible_by__team */
 	team_application_access: ReverseNavigationResource<TeamApplicationAccess>;
 }
 
