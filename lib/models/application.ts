@@ -27,7 +27,6 @@ import type {
 	Device,
 } from '..';
 import type {
-	CurrentService,
 	CurrentServiceWithCommit,
 	DeviceWithServiceDetails,
 } from '../util/device-service-details';
@@ -231,75 +230,6 @@ const getApplicationModel = function (
 				),
 			});
 			return apps.map(normalizeApplication);
-		},
-
-		/**
-		 * @summary Get applications and their devices, along with each device's
-		 * associated services' essential details
-		 * @name getAllWithDeviceServiceDetails
-		 * @public
-		 * @function
-		 * @memberof balena.models.application
-		 * @deprecated
-		 *
-		 * @description
-		 * This method does not map exactly to the underlying model: it runs a
-		 * larger prebuilt query, and reformats it into an easy to use and
-		 * understand format. If you want more control, or to see the raw model
-		 * directly, use `application.getAll(options)` instead.
-		 * **NOTE:** In contrast with device.getWithServiceDetails() the service details
-		 * in the result of this method do not include the associated commit.
-		 *
-		 * @param {Object} [options={}] - extra pine options to use
-		 * @fulfil {Object[]} - applications
-		 * @returns {Promise}
-		 *
-		 * @example
-		 * balena.models.application.getAllWithDeviceServiceDetails().then(function(applications) {
-		 * 	console.log(applications);
-		 * })
-		 *
-		 * @example
-		 * balena.models.application.getAllWithDeviceServiceDetails(function(error, applications) {
-		 * 	if (error) throw error;
-		 * 	console.log(applications);
-		 * });
-		 */
-		async getAllWithDeviceServiceDetails(
-			options?: PineOptions<Application>,
-		): Promise<
-			Array<
-				Application & {
-					owns__device: Array<DeviceWithServiceDetails<CurrentService>>;
-				}
-			>
-		> {
-			if (options == null) {
-				options = {};
-			}
-
-			const serviceOptions = mergePineOptions(
-				{
-					$expand: [
-						{
-							owns__device: {
-								$expand: getCurrentServiceDetailsPineExpand(false),
-							},
-						},
-					],
-				},
-				options,
-			);
-
-			const apps = (await exports.getAll(serviceOptions)) as Array<
-				Application & {
-					owns__device: Array<DeviceWithServiceDetails<CurrentService>>;
-				}
-			>;
-			apps.forEach((app) => {
-				app.owns__device = app.owns__device.map(generateCurrentServiceDetails);
-			});
-			return apps;
 		},
 
 		/**
