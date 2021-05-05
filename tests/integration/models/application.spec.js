@@ -30,17 +30,19 @@ describe('Application Model', function () {
 	describe('given no applications', function () {
 		describe('[read operations]', function () {
 			parallel('balena.models.application.getAll()', function () {
-				it('should eventually become an empty array [Promise]', function () {
-					const promise = balena.models.application.getAll();
-					return expect(promise).to.become([]);
+				it('should include public apps [promise]', async function () {
+					const applications = await balena.models.application.getAll();
+					const publicApps = applications.filter((app) => app.is_public);
+					expect(publicApps).to.have.length.that.is.greaterThan(0);
 				});
 
-				it('should eventually become an empty array [callback]', function (done) {
+				it('should include public apps [callback]', function (done) {
 					// @ts-expect-error
 					balena.models.application.getAll(function (err, applications) {
 						try {
 							expect(err).to.be.null;
-							expect(applications).to.deep.equal([]);
+							const publicApps = applications.filter((app) => app.is_public);
+							expect(publicApps).to.have.length.that.is.greaterThan(0);
 							done();
 						} catch (err) {
 							done(err);
@@ -306,53 +308,43 @@ describe('Application Model', function () {
 						});
 				});
 
-				it('should be able to create a child application', function () {
-					return balena.models.application
-						.create({
-							name: 'FooBarParent',
-							applicationType: 'microservices-starter',
-							deviceType: 'raspberry-pi',
-							organization: this.initialOrg.id,
-						})
-						.then((parentApplication) => {
-							return balena.models.application
-								.create({
-									name: 'FooBarChild',
-									applicationType: 'microservices-starter',
-									deviceType: 'generic',
-									organization: this.initialOrg.id,
-									parent: parentApplication.id,
-								})
-								.then(function (childApplication) {
-									expect(childApplication.depends_on__application).to.be.an(
-										'object',
-									);
-									expect(
-										childApplication.depends_on__application,
-									).to.have.property('__id', parentApplication.id);
-									// application.getAll() doesn't return dependent apps
-									return balena.pine.get({
-										resource: 'application',
-										options: {
-											$select: ['id', 'depends_on__application'],
-											$filter: {
-												id: {
-													$in: [parentApplication.id, childApplication.id],
-												},
-											},
-											$orderby: { id: 'asc' },
-										},
-									});
-								});
-						})
-						.then(function ([parentApplication, childApplication]) {
-							expect(childApplication.depends_on__application).to.be.an(
-								'object',
-							);
-							return expect(
-								childApplication.depends_on__application,
-							).to.have.property('__id', parentApplication.id);
+				it('should be able to create a child application', async function () {
+					const parentApplication = await balena.models.application.create({
+						name: 'FooBarParent',
+						applicationType: 'microservices-starter',
+						deviceType: 'raspberry-pi',
+						organization: this.initialOrg.id,
+					});
+
+					const childApplication = await balena.models.application.create({
+						name: 'FooBarChild',
+						applicationType: 'microservices-starter',
+						deviceType: 'generic',
+						organization: this.initialOrg.id,
+						parent: parentApplication.id,
+					});
+					expect(childApplication.depends_on__application).to.be.an('object');
+					expect(childApplication.depends_on__application).to.have.property(
+						'__id',
+						parentApplication.id,
+					);
+
+					const [retrievedParentApplication, retrievedChildApplication] =
+						await balena.models.application.getAll({
+							$select: ['id', 'depends_on__application'],
+							$filter: {
+								id: {
+									$in: [parentApplication.id, childApplication.id],
+								},
+							},
+							$orderby: { id: 'asc' },
 						});
+					expect(retrievedChildApplication.depends_on__application).to.be.an(
+						'object',
+					);
+					expect(
+						retrievedChildApplication.depends_on__application,
+					).to.have.property('__id', retrievedParentApplication.id);
 				});
 			});
 		});
@@ -1483,13 +1475,10 @@ describe('Application Model', function () {
 		let publicApp = undefined;
 
 		before(async function () {
-			const [app] = await balena.pine.get({
-				resource: 'application',
-				options: {
-					$top: 1,
-					$select: ['id', 'app_name', 'slug', 'is_public'],
-					$filter: { is_public: true },
-				},
+			const [app] = await balena.models.application.getAll({
+				$top: 1,
+				$select: ['id', 'app_name', 'slug', 'is_public'],
+				$filter: { is_public: true },
 			});
 			expect(app).to.have.property('is_public', true);
 			publicApp = app;

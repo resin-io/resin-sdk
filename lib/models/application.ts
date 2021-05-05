@@ -206,27 +206,13 @@ const getApplicationModel = function (
 		 * });
 		 */
 		async getAll(options?: PineOptions<Application>): Promise<Application[]> {
-			if (options == null) {
-				options = {};
-			}
-
 			const apps = await pine.get({
 				resource: 'application',
 				options: mergePineOptions(
 					{
-						$filter: {
-							is_directly_accessible_by__user: {
-								$any: {
-									$alias: 'dau',
-									$expr: {
-										1: 1,
-									},
-								},
-							},
-						},
 						$orderby: 'app_name asc',
 					},
-					options,
+					options ?? {},
 				),
 			});
 			return apps.map(normalizeApplication);
