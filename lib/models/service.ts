@@ -77,7 +77,7 @@ const getServiceModel = (
 		 * @function
 		 * @memberof balena.models.service
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string), slug (string) or id (number)
+		 * @param {String|Number} nameOrSlugOrUuidOrId - application name (string), slug (string), uuid (string) or id (number)
 		 * @param {Object} [options={}] - extra pine options to use
 		 * @fulfil {Object[]} - services
 		 * @returns {Promise}
@@ -99,10 +99,10 @@ const getServiceModel = (
 		 * });
 		 */
 		async getAllByApplication(
-			nameOrSlugOrId: string | number,
+			nameOrSlugOrUuidOrId: string | number,
 			options: PineOptions<Service> = {},
 		): Promise<Service[]> {
-			const { id } = await applicationModel().get(nameOrSlugOrId, {
+			const { id } = await applicationModel().get(nameOrSlugOrUuidOrId, {
 				$select: 'id',
 			});
 			return pine.get({
@@ -148,7 +148,7 @@ const getServiceModel = (
 			 * @function
 			 * @memberof balena.models.service.var
 			 *
-			 * @param {String|Number} nameOrSlugOrId - application name (string), slug (string) or id (number)
+			 * @param {String|Number} nameOrSlugOrUuidOrId - application name (string), slug (string), uuid (string) or id (number)
 			 * @param {Object} [options={}] - extra pine options to use
 			 * @fulfil {Object[]} - service variables
 			 * @returns {Promise}
@@ -170,10 +170,10 @@ const getServiceModel = (
 			 * });
 			 */
 			async getAllByApplication(
-				nameOrSlugOrId: string | number,
+				nameOrSlugOrUuidOrId: string | number,
 				options: PineOptions<ServiceEnvironmentVariable> = {},
 			): Promise<ServiceEnvironmentVariable[]> {
-				const { id } = await applicationModel().get(nameOrSlugOrId, {
+				const { id } = await applicationModel().get(nameOrSlugOrUuidOrId, {
 					$select: 'id',
 				});
 				return varModel.getAll(

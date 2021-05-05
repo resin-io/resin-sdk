@@ -38,7 +38,7 @@ const getApplicationInviteModel = function (
 	deps: InjectedDependenciesParam,
 	opts: InjectedOptionsParam,
 	getApplication: (
-		nameOrSlugOrId: string | number,
+		nameOrSlugOrUuidOrId: string | number,
 		options?: PineOptions<Application>,
 	) => Promise<Application>,
 ) {
@@ -89,7 +89,7 @@ const getApplicationInviteModel = function (
 		 * @description
 		 * This method returns all invites for a specific application.
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string), slug (string) or id (number)
+		 * @param {String|Number} nameOrSlugOrUuidOrId - application name (string), slug (string), uuid (string) or id (number)
 		 * @param {Object} [options={}] - extra pine options to use
 		 * @fulfil {Object[]} - invites
 		 * @returns {Promise}
@@ -110,10 +110,10 @@ const getApplicationInviteModel = function (
 		 * });
 		 */
 		async getAllByApplication(
-			nameOrSlugOrId: number | string,
+			nameOrSlugOrUuidOrId: number | string,
 			options: PineOptions<ApplicationInvite> = {},
 		): Promise<ApplicationInvite[]> {
-			const { id } = await getApplication(nameOrSlugOrId, {
+			const { id } = await getApplication(nameOrSlugOrUuidOrId, {
 				$select: 'id',
 			});
 			return await exports.getAll(
@@ -133,7 +133,7 @@ const getApplicationInviteModel = function (
 		 *
 		 * @description This method invites a user by their email to an application.
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string), slug (string) or id (number)
+		 * @param {String|Number} nameOrSlugOrUuidOrId - application name (string), slug (string), uuid (string) or id (number)
 		 * @param {Object} options - invite creation parameters
 		 * @param {String} options.invitee - the email/balena_username of the invitee
 		 * @param {String} [options.roleName="developer"] - the role name to be granted to the invitee
@@ -153,11 +153,11 @@ const getApplicationInviteModel = function (
 		 * });
 		 */
 		async create(
-			nameOrSlugOrId: string | number,
+			nameOrSlugOrUuidOrId: string | number,
 			{ invitee, roleName, message }: ApplicationInviteOptions,
 		): Promise<ApplicationInvite> {
 			const [{ id }, roles] = await Promise.all([
-				getApplication(nameOrSlugOrId, { $select: 'id' }),
+				getApplication(nameOrSlugOrUuidOrId, { $select: 'id' }),
 				roleName
 					? pine.get({
 							resource: 'application_membership_role',

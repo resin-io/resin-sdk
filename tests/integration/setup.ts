@@ -627,5 +627,6 @@ export const applicationRetrievalFields = toWritable([
 	'id',
 	'app_name',
 	'slug',
+	'uuid',
 ] as const);
 export const deviceUniqueFields = toWritable(['id', 'uuid'] as const);
