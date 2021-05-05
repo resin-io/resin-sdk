@@ -22,7 +22,7 @@ $ npm install --save balena-sdk
 
 ## Platforms
 
-We currently support NodeJS (10+) and the browser.
+We currently support NodeJS (12+) and the browser.
 
 The following features are node-only:
 - OS image streaming download (`balena.models.os.download`),
