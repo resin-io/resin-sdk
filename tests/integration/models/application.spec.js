@@ -49,6 +49,31 @@ describe('Application Model', function () {
 						}
 					});
 				});
+
+				it('should eventually become an empty array of accessible apps [Promise]', async function () {
+					const apps = await balena.models.application.getAll(
+						{},
+						'directly_accessible',
+					);
+					expect(apps).to.deep.equal([]);
+				});
+
+				it('should eventually become an empty array of accessible apps [callback]', function (done) {
+					balena.models.application.getAll(
+						{},
+						'directly_accessible',
+						// @ts-expect-error
+						function (err, applications) {
+							try {
+								expect(err).to.be.null;
+								expect(applications).to.deep.equal([]);
+								done();
+							} catch (err) {
+								done(err);
+							}
+						},
+					);
+				});
 			});
 
 			parallel('balena.models.application.getAppByName()', function () {
@@ -224,26 +249,25 @@ describe('Application Model', function () {
 				);
 
 				['id', 'handle'].forEach((prop) =>
-					it(`should be able to create an application using the user's initial organization ${prop}`, function () {
-						return balena.models.application
-							.create({
-								name: `FooBarByOrg${_.startCase(prop)}`,
-								deviceType: 'raspberrypi',
-								organization: this.initialOrg[prop],
-							})
-							.then(() =>
-								balena.models.application.getAll({
-									$select: 'id',
-									$expand: { organization: { $select: 'id' } },
-								}),
-							)
-							.then((apps) => {
-								expect(apps).to.have.length(appCount);
-								return expect(apps[0]).to.have.nested.property(
-									'organization[0].id',
-									this.initialOrg.id,
-								);
-							});
+					it(`should be able to create an application using the user's initial organization ${prop}`, async function () {
+						await balena.models.application.create({
+							name: `FooBarByOrg${_.startCase(prop)}`,
+							deviceType: 'raspberrypi',
+							organization: this.initialOrg[prop],
+						});
+
+						const apps = await balena.models.application.getAll(
+							{
+								$select: 'id',
+								$expand: { organization: { $select: 'id' } },
+							},
+							'directly_accessible',
+						);
+						expect(apps).to.have.length(appCount);
+						expect(apps[0]).to.have.nested.property(
+							'organization[0].id',
+							this.initialOrg.id,
+						);
 					}),
 				);
 
@@ -255,7 +279,10 @@ describe('Application Model', function () {
 							organization: this.initialOrg.id,
 						})
 						.then(function () {
-							const promise = balena.models.application.getAll();
+							const promise = balena.models.application.getAll(
+								{},
+								'directly_accessible',
+							);
 							return expect(promise).to.eventually.have.length(appCount);
 						});
 				});
@@ -276,10 +303,13 @@ describe('Application Model', function () {
 								.that.is.a('number');
 
 							return balena.models.application
-								.getAll({
-									$expand: { is_for__device_type: { $select: 'slug' } },
-									$orderby: 'id desc',
-								})
+								.getAll(
+									{
+										$expand: { is_for__device_type: { $select: 'slug' } },
+										$orderby: 'id desc',
+									},
+									'directly_accessible',
+								)
 								.then(function (apps) {
 									expect(apps).to.have.length(appCount);
 									expect(apps[0]).to.have.property('id', app.id);
@@ -294,18 +324,19 @@ describe('Application Model', function () {
 						});
 				});
 
-				it('...should be able to create an application using a device type alias', function () {
-					return balena.models.application
-						.create({
-							name: 'FooBarDeviceTypeAlias',
-							applicationType: 'microservices-starter',
-							deviceType: 'raspberrypi',
-							organization: this.initialOrg.id,
-						})
-						.then(function () {
-							const promise = balena.models.application.getAll();
-							return expect(promise).to.eventually.have.length(appCount);
-						});
+				it('...should be able to create an application using a device type alias', async function () {
+					await balena.models.application.create({
+						name: 'FooBarDeviceTypeAlias',
+						applicationType: 'microservices-starter',
+						deviceType: 'raspberrypi',
+						organization: this.initialOrg.id,
+					});
+
+					const promise = balena.models.application.getAll(
+						{},
+						'directly_accessible',
+					);
+					await expect(promise).to.eventually.have.length(appCount);
 				});
 
 				it('should be able to create a child application', async function () {
@@ -375,7 +406,10 @@ describe('Application Model', function () {
 						return balena.models.application
 							.remove(this.application[prop])
 							.then(function () {
-								const promise = balena.models.application.getAll();
+								const promise = balena.models.application.getAll(
+									{},
+									'directly_accessible',
+								);
 								return expect(promise).to.eventually.have.length(0);
 							});
 					});
@@ -455,29 +489,30 @@ describe('Application Model', function () {
 				});
 
 				parallel('balena.models.application.getAll()', function () {
-					it('should return an array with length 1', function () {
-						const promise = balena.models.application.getAll();
-						return expect(promise).to.eventually.have.length(1);
+					it('should eventually become an array containing the application', async function () {
+						const applications = await balena.models.application.getAll(
+							{},
+							'directly_accessible',
+						);
+						expect(applications).to.have.length(1);
+						expect(applications[0].id).to.equal(ctx.application.id);
 					});
 
-					it('should eventually become an array containing the application', function () {
-						return balena.models.application.getAll().then((applications) => {
-							return expect(applications[0].id).to.equal(ctx.application.id);
-						});
+					it('should support arbitrary pinejs options [Promise]', async function () {
+						const applications = await balena.models.application.getAll(
+							{ $expand: { organization: { $select: 'handle' } } },
+							'directly_accessible',
+						);
+						expect(applications[0].organization[0].handle).to.equal(
+							credentials.username,
+						);
 					});
-
-					it('should support arbitrary pinejs options [Promise]', () =>
-						balena.models.application
-							.getAll({ $expand: { organization: { $select: 'handle' } } })
-							.then((applications) =>
-								expect(applications[0].organization[0].handle).to.equal(
-									credentials.username,
-								),
-							));
 
 					it('should support arbitrary pinejs options [callback]', function (done) {
 						balena.models.application.getAll(
 							{ $expand: { organization: { $select: 'handle' } } },
+							'directly_accessible',
+
 							// @ts-expect-error
 							function (err, applications) {
 								try {
@@ -1484,18 +1519,40 @@ describe('Application Model', function () {
 			publicApp = app;
 		});
 
+		const $it = function (description, fn) {
+			it(description, function () {
+				if (!publicApp) {
+					this.skip();
+					return;
+				}
+				return fn.call(this);
+			});
+		};
+
+		describe('when logged in', function () {
+			describe('balena.models.application.getAll()', function () {
+				$it('should be able to get the public application', async function () {
+					const apps = await balena.models.application.getAll({
+						$filter: { id: publicApp.id },
+					});
+					expect(apps).to.have.length(1);
+					expect(apps[0].id).to.equal(publicApp.id);
+				});
+			});
+
+			describe('balena.models.application.getAll() [directly_accessible]', function () {
+				$it('should be able to get the public application', async function () {
+					const apps = await balena.models.application.getAll(
+						{ $filter: { id: publicApp.id } },
+						'directly_accessible',
+					);
+					expect(apps).to.have.length(0);
+				});
+			});
+		});
+
 		describe('when not being logged in', function () {
 			before(() => balena.auth.logout());
-
-			const $it = function (description, fn) {
-				it(description, function () {
-					if (!publicApp) {
-						this.skip();
-						return;
-					}
-					return fn.call(this);
-				});
-			};
 
 			describe('arbitrary pinejs queries', () =>
 				$it(
@@ -1514,11 +1571,11 @@ describe('Application Model', function () {
 								const appIds = apps.map((app) => app.id);
 								expect(appIds.includes(publicApp.id)).to.be.true;
 
-								return apps.forEach(function (app) {
+								apps.forEach(function (app) {
 									expect(app).to.have.property('id').that.is.a('number');
 									expect(app).to.have.property('app_name').that.is.a('string');
 									expect(app).to.have.property('slug').that.is.a('string');
-									return expect(app).to.have.property('is_public', true);
+									expect(app).to.have.property('is_public', true);
 								});
 							});
 					},
@@ -1535,7 +1592,7 @@ describe('Application Model', function () {
 									expect(app).to.have.property('id').that.is.a('number');
 									expect(app).to.have.property('app_name').that.is.a('string');
 									expect(app).to.have.property('slug').that.is.a('string');
-									return expect(app).to.have.property('is_public', true);
+									expect(app).to.have.property('is_public', true);
 								});
 						},
 					);

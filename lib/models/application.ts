@@ -191,6 +191,7 @@ const getApplicationModel = function (
 		 * @memberof balena.models.application
 		 *
 		 * @param {Object} [options={}] - extra pine options to use
+		 * @param {String} [context] - extra access filters, undefined or 'directly_accessible'
 		 * @fulfil {Object[]} - applications
 		 * @returns {Promise}
 		 *
@@ -205,11 +206,26 @@ const getApplicationModel = function (
 		 * 	console.log(applications);
 		 * });
 		 */
-		async getAll(options?: PineOptions<Application>): Promise<Application[]> {
+		async getAll(
+			options?: PineOptions<Application>,
+			context?: 'directly_accessible',
+		): Promise<Application[]> {
 			const apps = await pine.get({
 				resource: 'application',
 				options: mergePineOptions(
 					{
+						...(context === 'directly_accessible' && {
+							$filter: {
+								is_directly_accessible_by__user: {
+									$any: {
+										$alias: 'dau',
+										$expr: {
+											1: 1,
+										},
+									},
+								},
+							},
+						}),
 						$orderby: 'app_name asc',
 					},
 					options ?? {},
@@ -496,7 +512,7 @@ const getApplicationModel = function (
 		},
 
 		/**
-		 * @summary Check if the user has any applications
+		 * @summary Check if the user has access to any applications
 		 * @name hasAny
 		 * @public
 		 * @function
@@ -517,7 +533,10 @@ const getApplicationModel = function (
 		 * });
 		 */
 		hasAny: async (): Promise<boolean> => {
-			const applications = await exports.getAll({ $select: ['id'] });
+			const applications = await exports.getAll(
+				{ $select: ['id'] },
+				'directly_accessible',
+			);
 			return applications.length !== 0;
 		},
 
