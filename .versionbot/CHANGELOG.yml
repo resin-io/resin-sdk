@@ -1,4 +1,25 @@
 - commits:
+    - subject: 'typings: Add the release versioning properties'
+      hash: b692366d03ee44ae311934cc541bee83f2ce417e
+      body: ''
+      footer:
+        Change-type: minor
+        change-type: minor
+        Depends-on: 'https://github.com/balena-io/balena-api/pull/3171'
+        depends-on: 'https://github.com/balena-io/balena-api/pull/3171'
+        See: >-
+          See:
+          https://www.flowdock.com/app/rulemotion/r-supervisor/threads/JN2-gnspQ-v6WaeWCvm9T8NYDY1
+        see: >-
+          See:
+          https://www.flowdock.com/app/rulemotion/r-supervisor/threads/JN2-gnspQ-v6WaeWCvm9T8NYDY1
+        Signed-off-by: Thodoris Greasidis <thodoris@balena.io>
+        signed-off-by: Thodoris Greasidis <thodoris@balena.io>
+      author: Thodoris Greasidis
+      nested: []
+  version: 15.38.0
+  date: 2021-05-20T12:13:12.989Z
+- commits:
     - subject: Add public organization types
       hash: 25c88dffddb3878e6d07d465cced711ec66537ad
       body: |
