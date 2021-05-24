@@ -1530,6 +1530,39 @@ describe('Application Model', function () {
 		};
 
 		describe('when logged in', function () {
+			parallel('balena.models.application.get()', function () {
+				applicationRetrievalFields.forEach((prop) =>
+					$it(
+						`should be able to get the public application by ${prop}`,
+						async function () {
+							const app = await balena.models.application.get(publicApp[prop]);
+							expect(app.id).to.equal(publicApp.id);
+						},
+					),
+				);
+			});
+
+			parallel(
+				'balena.models.application.get() [directly_accessible]',
+				function () {
+					applicationRetrievalFields.forEach((prop) =>
+						$it(
+							`should be able to get the public application by ${prop}`,
+							async function () {
+								const promise = balena.models.application.get(
+									publicApp[prop],
+									{},
+									'directly_accessible',
+								);
+								await expect(promise).to.eventually.be.rejectedWith(
+									`Application not found: ${publicApp[prop]}`,
+								);
+							},
+						),
+					);
+				},
+			);
+
 			describe('balena.models.application.getAll()', function () {
 				$it('should be able to get the public application', async function () {
 					const apps = await balena.models.application.getAll({

@@ -156,6 +156,17 @@ const getApplicationModel = function (
 		return application;
 	};
 
+	const isDirectlyAccessibleByUserFilter = {
+		is_directly_accessible_by__user: {
+			$any: {
+				$alias: 'dau',
+				$expr: {
+					1: 1,
+				},
+			},
+		},
+	};
+
 	const exports = {
 		_getId: getId,
 
@@ -215,16 +226,7 @@ const getApplicationModel = function (
 				options: mergePineOptions(
 					{
 						...(context === 'directly_accessible' && {
-							$filter: {
-								is_directly_accessible_by__user: {
-									$any: {
-										$alias: 'dau',
-										$expr: {
-											1: 1,
-										},
-									},
-								},
-							},
+							$filter: isDirectlyAccessibleByUserFilter,
 						}),
 						$orderby: 'app_name asc',
 					},
@@ -243,6 +245,7 @@ const getApplicationModel = function (
 		 *
 		 * @param {String|Number} slugOrId - application slug (string) or id (number)
 		 * @param {Object} [options={}] - extra pine options to use
+		 * @param {String} [context] - extra access filters, undefined or 'directly_accessible'
 		 * @fulfil {Object} - application
 		 * @returns {Promise}
 		 *
@@ -265,6 +268,7 @@ const getApplicationModel = function (
 		async get(
 			slugOrId: string | number,
 			options?: PineOptions<Application>,
+			context?: 'directly_accessible',
 		): Promise<Application> {
 			if (options == null) {
 				options = {};
@@ -274,12 +278,20 @@ const getApplicationModel = function (
 				throw new errors.BalenaApplicationNotFound(slugOrId);
 			}
 
+			const accessFilter =
+				context === 'directly_accessible'
+					? isDirectlyAccessibleByUserFilter
+					: null;
+
 			let application;
 			if (isId(slugOrId)) {
 				application = await pine.get({
 					resource: 'application',
 					id: slugOrId,
-					options: mergePineOptions({}, options),
+					options: mergePineOptions(
+						accessFilter != null ? { $filter: accessFilter } : {},
+						options,
+					),
 				});
 				if (application == null) {
 					throw new errors.BalenaApplicationNotFound(slugOrId);
@@ -290,6 +302,7 @@ const getApplicationModel = function (
 					options: mergePineOptions(
 						{
 							$filter: {
+								...accessFilter,
 								slug: slugOrId.toLowerCase(),
 							},
 						},
