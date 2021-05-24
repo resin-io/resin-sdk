@@ -141,7 +141,9 @@ const sdk = fromSharedOptions();
                 * [.accept(invitationToken)](#balena.models.application.invite.accept) ⇒ <code>Promise</code>
             * [.getDashboardUrl(id)](#balena.models.application.getDashboardUrl) ⇒ <code>String</code>
             * [.getAll([options], [context])](#balena.models.application.getAll) ⇒ <code>Promise</code>
+            * [.getAllDirectlyAccessible([options])](#balena.models.application.getAllDirectlyAccessible) ⇒ <code>Promise</code>
             * [.get(slugOrId, [options], [context])](#balena.models.application.get) ⇒ <code>Promise</code>
+            * [.getDirectlyAccessible(slugOrId, [options])](#balena.models.application.getDirectlyAccessible) ⇒ <code>Promise</code>
             * [.getWithDeviceServiceDetails(slugOrId, [options])](#balena.models.application.getWithDeviceServiceDetails) ⇒ <code>Promise</code>
             * [.getAppByName(appName, [options])](#balena.models.application.getAppByName) ⇒ <code>Promise</code>
             * [.getAppByOwner(appName, owner, [options])](#balena.models.application.getAppByOwner) ⇒ <code>Promise</code>
@@ -508,7 +510,9 @@ balena.models.device.get(123).catch(function (error) {
             * [.accept(invitationToken)](#balena.models.application.invite.accept) ⇒ <code>Promise</code>
         * [.getDashboardUrl(id)](#balena.models.application.getDashboardUrl) ⇒ <code>String</code>
         * [.getAll([options], [context])](#balena.models.application.getAll) ⇒ <code>Promise</code>
+        * [.getAllDirectlyAccessible([options])](#balena.models.application.getAllDirectlyAccessible) ⇒ <code>Promise</code>
         * [.get(slugOrId, [options], [context])](#balena.models.application.get) ⇒ <code>Promise</code>
+        * [.getDirectlyAccessible(slugOrId, [options])](#balena.models.application.getDirectlyAccessible) ⇒ <code>Promise</code>
         * [.getWithDeviceServiceDetails(slugOrId, [options])](#balena.models.application.getWithDeviceServiceDetails) ⇒ <code>Promise</code>
         * [.getAppByName(appName, [options])](#balena.models.application.getAppByName) ⇒ <code>Promise</code>
         * [.getAppByOwner(appName, owner, [options])](#balena.models.application.getAppByOwner) ⇒ <code>Promise</code>
@@ -748,7 +752,9 @@ balena.models.device.get(123).catch(function (error) {
         * [.accept(invitationToken)](#balena.models.application.invite.accept) ⇒ <code>Promise</code>
     * [.getDashboardUrl(id)](#balena.models.application.getDashboardUrl) ⇒ <code>String</code>
     * [.getAll([options], [context])](#balena.models.application.getAll) ⇒ <code>Promise</code>
+    * [.getAllDirectlyAccessible([options])](#balena.models.application.getAllDirectlyAccessible) ⇒ <code>Promise</code>
     * [.get(slugOrId, [options], [context])](#balena.models.application.get) ⇒ <code>Promise</code>
+    * [.getDirectlyAccessible(slugOrId, [options])](#balena.models.application.getDirectlyAccessible) ⇒ <code>Promise</code>
     * [.getWithDeviceServiceDetails(slugOrId, [options])](#balena.models.application.getWithDeviceServiceDetails) ⇒ <code>Promise</code>
     * [.getAppByName(appName, [options])](#balena.models.application.getAppByName) ⇒ <code>Promise</code>
     * [.getAppByOwner(appName, owner, [options])](#balena.models.application.getAppByOwner) ⇒ <code>Promise</code>
@@ -1691,6 +1697,31 @@ balena.models.application.getAll(function(error, applications) {
 	console.log(applications);
 });
 ```
+<a name="balena.models.application.getAllDirectlyAccessible"></a>
+
+##### application.getAllDirectlyAccessible([options]) ⇒ <code>Promise</code>
+**Kind**: static method of [<code>application</code>](#balena.models.application)  
+**Summary**: Get all applications directly accessible by the user  
+**Access**: public  
+**Fulfil**: <code>Object[]</code> - applications  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| [options] | <code>Object</code> | <code>{}</code> | extra pine options to use |
+
+**Example**  
+```js
+balena.models.application.getAllDirectlyAccessible().then(function(applications) {
+	console.log(applications);
+});
+```
+**Example**  
+```js
+balena.models.application.getAllDirectlyAccessible(function(error, applications) {
+	if (error) throw error;
+	console.log(applications);
+});
+```
 <a name="balena.models.application.get"></a>
 
 ##### application.get(slugOrId, [options], [context]) ⇒ <code>Promise</code>
@@ -1720,6 +1751,38 @@ balena.models.application.get(123).then(function(application) {
 **Example**  
 ```js
 balena.models.application.get('myorganization/myapp', function(error, application) {
+	if (error) throw error;
+	console.log(application);
+});
+```
+<a name="balena.models.application.getDirectlyAccessible"></a>
+
+##### application.getDirectlyAccessible(slugOrId, [options]) ⇒ <code>Promise</code>
+**Kind**: static method of [<code>application</code>](#balena.models.application)  
+**Summary**: Get a single application directly accessible by the user  
+**Access**: public  
+**Fulfil**: <code>Object</code> - application  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| slugOrId | <code>String</code> \| <code>Number</code> |  | application slug (string) or id (number) |
+| [options] | <code>Object</code> | <code>{}</code> | extra pine options to use |
+
+**Example**  
+```js
+balena.models.application.getDirectlyAccessible('myorganization/myapp').then(function(application) {
+	console.log(application);
+});
+```
+**Example**  
+```js
+balena.models.application.getDirectlyAccessible(123).then(function(application) {
+	console.log(application);
+});
+```
+**Example**  
+```js
+balena.models.application.getDirectlyAccessible('myorganization/myapp', function(error, application) {
 	if (error) throw error;
 	console.log(application);
 });

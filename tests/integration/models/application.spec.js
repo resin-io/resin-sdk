@@ -76,6 +76,33 @@ describe('Application Model', function () {
 				});
 			});
 
+			parallel(
+				'balena.models.application.getAllDirectlyAccessible()',
+				function () {
+					it('should eventually become an empty array of accessible apps [Promise]', async function () {
+						const apps =
+							await balena.models.application.getAllDirectlyAccessible();
+						expect(apps).to.deep.equal([]);
+					});
+
+					it('should eventually become an empty array of accessible apps [callback]', function (done) {
+						balena.models.application.getAllDirectlyAccessible(
+							{},
+							// @ts-expect-error
+							function (err, applications) {
+								try {
+									expect(err).to.be.null;
+									expect(applications).to.deep.equal([]);
+									done();
+								} catch (err) {
+									done(err);
+								}
+							},
+						);
+					});
+				},
+			);
+
 			parallel('balena.models.application.getAppByName()', function () {
 				it('should eventually reject [Promise]', async function () {
 					const promise = balena.models.application.getAppByName('testapp');
@@ -529,6 +556,46 @@ describe('Application Model', function () {
 					});
 				});
 
+				parallel(
+					'balena.models.application.getAllDirectlyAccessible()',
+					function () {
+						it('should eventually become an array containing the application', async function () {
+							const applications =
+								await balena.models.application.getAllDirectlyAccessible();
+							expect(applications).to.have.length(1);
+							expect(applications[0].id).to.equal(ctx.application.id);
+						});
+
+						it('should support arbitrary pinejs options [Promise]', async function () {
+							const applications =
+								await balena.models.application.getAllDirectlyAccessible({
+									$expand: { organization: { $select: 'handle' } },
+								});
+							expect(applications[0].organization[0].handle).to.equal(
+								credentials.username,
+							);
+						});
+
+						it('should support arbitrary pinejs options [callback]', function (done) {
+							balena.models.application.getAllDirectlyAccessible(
+								{ $expand: { organization: { $select: 'handle' } } },
+								// @ts-expect-error
+								function (err, applications) {
+									try {
+										expect(err).to.be.null;
+										expect(applications[0].organization[0].handle).to.equal(
+											credentials.username,
+										);
+										done();
+									} catch (err) {
+										done(err);
+									}
+								},
+							);
+						});
+					},
+				);
+
 				parallel('balena.models.application.get()', function () {
 					applicationRetrievalFields.forEach((prop) =>
 						it(`should be able to get an application by ${prop}`, function () {
@@ -582,6 +649,20 @@ describe('Application Model', function () {
 							);
 					});
 				});
+
+				parallel(
+					'balena.models.application.getDirectlyAccessible()',
+					function () {
+						applicationRetrievalFields.forEach((prop) =>
+							it(`should be able to get an application by ${prop}`, function () {
+								const promise = balena.models.application.getDirectlyAccessible(
+									ctx.application[prop],
+								);
+								return expect(promise).to.become(ctx.application);
+							}),
+						);
+					},
+				);
 
 				parallel('balena.models.application.has()', function () {
 					applicationRetrievalFields.forEach((prop) =>
@@ -1563,6 +1644,25 @@ describe('Application Model', function () {
 				},
 			);
 
+			parallel(
+				'balena.models.application.getDirectlyAccessible()',
+				function () {
+					applicationRetrievalFields.forEach((prop) =>
+						$it(
+							`should not return the public application by ${prop}`,
+							async function () {
+								const promise = balena.models.application.getDirectlyAccessible(
+									publicApp[prop],
+								);
+								await expect(promise).to.eventually.be.rejectedWith(
+									`Application not found: ${publicApp[prop]}`,
+								);
+							},
+						),
+					);
+				},
+			);
+
 			describe('balena.models.application.getAll()', function () {
 				$it('should be able to get the public application', async function () {
 					const apps = await balena.models.application.getAll({
@@ -1581,6 +1681,19 @@ describe('Application Model', function () {
 					);
 					expect(apps).to.have.length(0);
 				});
+			});
+
+			describe('balena.models.application.getAllDirectlyAccessible()', function () {
+				$it(
+					'should not be able to get the public application',
+					async function () {
+						const apps =
+							await balena.models.application.getAllDirectlyAccessible({
+								$filter: { id: publicApp.id },
+							});
+						expect(apps).to.have.length(0);
+					},
+				);
 			});
 		});
 

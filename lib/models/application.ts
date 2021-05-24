@@ -237,6 +237,34 @@ const getApplicationModel = function (
 		},
 
 		/**
+		 * @summary Get all applications directly accessible by the user
+		 * @name getAllDirectlyAccessible
+		 * @public
+		 * @function
+		 * @memberof balena.models.application
+		 *
+		 * @param {Object} [options={}] - extra pine options to use
+		 * @fulfil {Object[]} - applications
+		 * @returns {Promise}
+		 *
+		 * @example
+		 * balena.models.application.getAllDirectlyAccessible().then(function(applications) {
+		 * 	console.log(applications);
+		 * });
+		 *
+		 * @example
+		 * balena.models.application.getAllDirectlyAccessible(function(error, applications) {
+		 * 	if (error) throw error;
+		 * 	console.log(applications);
+		 * });
+		 */
+		async getAllDirectlyAccessible(
+			options?: PineOptions<Application>,
+		): Promise<Application[]> {
+			return await exports.getAll(options, 'directly_accessible');
+		},
+
+		/**
 		 * @summary Get a single application
 		 * @name get
 		 * @public
@@ -319,6 +347,41 @@ const getApplicationModel = function (
 				application = applications[0];
 			}
 			return normalizeApplication(application);
+		},
+
+		/**
+		 * @summary Get a single application directly accessible by the user
+		 * @name getDirectlyAccessible
+		 * @public
+		 * @function
+		 * @memberof balena.models.application
+		 *
+		 * @param {String|Number} slugOrId - application slug (string) or id (number)
+		 * @param {Object} [options={}] - extra pine options to use
+		 * @fulfil {Object} - application
+		 * @returns {Promise}
+		 *
+		 * @example
+		 * balena.models.application.getDirectlyAccessible('myorganization/myapp').then(function(application) {
+		 * 	console.log(application);
+		 * });
+		 *
+		 * @example
+		 * balena.models.application.getDirectlyAccessible(123).then(function(application) {
+		 * 	console.log(application);
+		 * });
+		 *
+		 * @example
+		 * balena.models.application.getDirectlyAccessible('myorganization/myapp', function(error, application) {
+		 * 	if (error) throw error;
+		 * 	console.log(application);
+		 * });
+		 */
+		async getDirectlyAccessible(
+			slugOrId: string | number,
+			options?: PineOptions<Application>,
+		): Promise<Application> {
+			return await exports.get(slugOrId, options, 'directly_accessible');
 		},
 
 		/**
