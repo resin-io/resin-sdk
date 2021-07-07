@@ -8,6 +8,8 @@ export interface JWTUser {
 	first_name?: string;
 	hasPasswordSet?: boolean;
 	has_disabled_newsletter?: boolean;
+	must_be_verified?: boolean;
+	is_verified?: boolean;
 	id: number;
 	intercomUserName?: string;
 	intercomUserHash?: string;
