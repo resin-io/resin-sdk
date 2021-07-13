@@ -174,7 +174,7 @@ const getApiKeysModel = function (
 		 * @function
 		 * @memberof balena.models.apiKey
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String|Number} slugOrId - application slug (string) or id (number)
 		 * @param {Object} [options={}] - extra pine options to use
 		 * @fulfil {Object[]} - apiKeys
 		 * @returns {Promise}
@@ -191,10 +191,10 @@ const getApiKeysModel = function (
 		 * });
 		 */
 		async getProvisioningApiKeysByApplication(
-			nameOrSlugOrId: string | number,
+			slugOrId: string | number,
 			options: BalenaSdk.PineOptions<BalenaSdk.ApiKey> = {},
 		): Promise<BalenaSdk.ApiKey[]> {
-			const { actor } = await applicationModel().get(nameOrSlugOrId, {
+			const { actor } = await applicationModel().get(slugOrId, {
 				$select: 'actor',
 			});
 

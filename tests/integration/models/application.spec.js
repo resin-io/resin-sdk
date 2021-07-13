@@ -360,10 +360,12 @@ describe('Application Model', function () {
 
 	describe('given a single application', function () {
 		describe('balena.models.application.remove()', function () {
-			it('should be rejected if the application name does not exist', function () {
-				const promise = balena.models.application.remove('HelloWorldApp');
+			it('should be rejected if the application slug does not exist', function () {
+				const promise = balena.models.application.remove(
+					`${this.initialOrg.handle}/helloworldapp`,
+				);
 				return expect(promise).to.be.rejectedWith(
-					'Application not found: HelloWorldApp',
+					`Application not found: ${this.initialOrg.handle}/helloworldapp`,
 				);
 			});
 
@@ -525,10 +527,12 @@ describe('Application Model', function () {
 						return expect(promise).to.become(ctx.application);
 					});
 
-					it('should be rejected if the application name does not exist', function () {
-						const promise = balena.models.application.get('HelloWorldApp');
+					it('should be rejected if the application slug does not exist', function () {
+						const promise = balena.models.application.get(
+							`${ctx.initialOrg.handle}/helloworldapp`,
+						);
 						return expect(promise).to.be.rejectedWith(
-							'Application not found: HelloWorldApp',
+							`Application not found: ${ctx.initialOrg.handle}/helloworldapp`,
 						);
 					});
 
@@ -568,8 +572,10 @@ describe('Application Model', function () {
 						return expect(promise).to.eventually.be.false;
 					});
 
-					it('should eventually be false if the application name does not exist', function () {
-						const promise = balena.models.application.has('HelloWorldApp');
+					it('should eventually be false if the application slug does not exist', function () {
+						const promise = balena.models.application.has(
+							`${ctx.initialOrg.handle}/helloworldapp`,
+						);
 						return expect(promise).to.eventually.be.false;
 					});
 
@@ -581,13 +587,13 @@ describe('Application Model', function () {
 			});
 
 			describe('balena.models.application.rename()', function () {
-				it('should be rejected if the application name does not exist', function () {
+				it('should be rejected if the application slug does not exist', function () {
 					const promise = balena.models.application.rename(
-						'HelloWorldApp',
+						`${this.initialOrg.handle}/helloworldapp`,
 						'newAppName',
 					);
 					return expect(promise).to.be.rejectedWith(
-						'Application not found: HelloWorldApp',
+						`Application not found: ${this.initialOrg.handle}/helloworldapp`,
 					);
 				});
 
@@ -633,11 +639,12 @@ describe('Application Model', function () {
 					}),
 				);
 
-				it('should be rejected if the application name does not exist', function () {
-					const promise =
-						balena.models.application.generateApiKey('HelloWorldApp');
+				it('should be rejected if the application slug does not exist', function () {
+					const promise = balena.models.application.generateApiKey(
+						`${this.initialOrg.handle}/helloworldapp`,
+					);
 					return expect(promise).to.be.rejectedWith(
-						'Application not found: HelloWorldApp',
+						`Application not found: ${this.initialOrg.handle}/helloworldapp`,
 					);
 				});
 
@@ -661,11 +668,12 @@ describe('Application Model', function () {
 					}),
 				);
 
-				it('should be rejected if the application name does not exist', function () {
-					const promise =
-						balena.models.application.generateProvisioningKey('HelloWorldApp');
+				it('should be rejected if the application slug does not exist', function () {
+					const promise = balena.models.application.generateProvisioningKey(
+						`${this.initialOrg.handle}/helloworldapp`,
+					);
 					return expect(promise).to.be.rejectedWith(
-						'Application not found: HelloWorldApp',
+						`Application not found: ${this.initialOrg.handle}/helloworldapp`,
 					);
 				});
 

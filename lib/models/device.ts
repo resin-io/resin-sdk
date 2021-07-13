@@ -360,13 +360,13 @@ const getDeviceModel = function (
 		 * * `overall_status`
 		 * * `overall_progress`
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String|Number} slugOrId - application slug (string) or id (number)
 		 * @param {Object} [options={}] - extra pine options to use
 		 * @fulfil {Object[]} - devices
 		 * @returns {Promise}
 		 *
 		 * @example
-		 * balena.models.device.getAllByApplication('MyApp').then(function(devices) {
+		 * balena.models.device.getAllByApplication('myorganization/myapp').then(function(devices) {
 		 * 	console.log(devices);
 		 * });
 		 *
@@ -376,25 +376,25 @@ const getDeviceModel = function (
 		 * });
 		 *
 		 * @example
-		 * balena.models.device.getAllByApplication('MyApp', { $select: ['overall_status', 'overall_progress'] }).then(function(device) {
+		 * balena.models.device.getAllByApplication('myorganization/myapp', { $select: ['overall_status', 'overall_progress'] }).then(function(device) {
 		 * 	console.log(device);
 		 * })
 		 *
 		 * @example
-		 * balena.models.device.getAllByApplication('MyApp', function(error, devices) {
+		 * balena.models.device.getAllByApplication('myorganization/myapp', function(error, devices) {
 		 * 	if (error) throw error;
 		 * 	console.log(devices);
 		 * });
 		 */
 		async getAllByApplication(
-			nameOrSlugOrId: string | number,
+			slugOrId: string | number,
 			options?: PineOptions<Device>,
 		): Promise<Device[]> {
 			if (options == null) {
 				options = {};
 			}
 
-			const { id } = await applicationModel().get(nameOrSlugOrId, {
+			const { id } = await applicationModel().get(slugOrId, {
 				$select: 'id',
 			});
 			return await exports.getAll(
@@ -1094,27 +1094,27 @@ const getDeviceModel = function (
 		 * @memberof balena.models.device
 		 *
 		 * @param {String|Number} uuidOrId - device uuid (string) or id (number)
-		 * @param {String|Number} applicationNameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String|Number} applicationSlugOrId - application slug (string) or id (number)
 		 *
 		 * @returns {Promise}
 		 *
 		 * @example
-		 * balena.models.device.move('7cf02a6', 'MyApp');
+		 * balena.models.device.move('7cf02a6', 'myorganization/myapp');
 		 *
 		 * @example
-		 * balena.models.device.move(123, 'MyApp');
+		 * balena.models.device.move(123, 'myorganization/myapp');
 		 *
 		 * @example
 		 * balena.models.device.move(123, 456);
 		 *
 		 * @example
-		 * balena.models.device.move('7cf02a6', 'MyApp', function(error) {
+		 * balena.models.device.move('7cf02a6', 'myorganization/myapp', function(error) {
 		 * 	if (error) throw error;
 		 * });
 		 */
 		move: async (
 			uuidOrId: string | number,
-			applicationNameOrSlugOrId: string | number,
+			applicationSlugOrId: string | number,
 		): Promise<void> => {
 			const deviceOptions = {
 				$select: 'uuid',
@@ -1132,7 +1132,7 @@ const getDeviceModel = function (
 				>,
 				configModel().getDeviceTypes(),
 				applicationModel().get(
-					applicationNameOrSlugOrId,
+					applicationSlugOrId,
 					applicationOptions,
 				) as Promise<PineTypedResult<Application, typeof applicationOptions>>,
 			]);
@@ -1150,7 +1150,7 @@ const getDeviceModel = function (
 			);
 			if (!isCompatibleMove) {
 				throw new errors.BalenaInvalidDeviceType(
-					`Incompatible application: ${applicationNameOrSlugOrId}`,
+					`Incompatible application: ${applicationSlugOrId}`,
 				);
 			}
 
@@ -1296,12 +1296,12 @@ const getDeviceModel = function (
 		 * @function
 		 * @memberof balena.models.device
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String|Number} slugOrId - application slug (string) or id (number)
 		 * @fulfil {Object} - device manifest
 		 * @returns {Promise}
 		 *
 		 * @example
-		 * balena.models.device.getManifestByApplication('MyApp').then(function(manifest) {
+		 * balena.models.device.getManifestByApplication('myorganization/myapp').then(function(manifest) {
 		 * 	console.log(manifest);
 		 * });
 		 *
@@ -1311,13 +1311,13 @@ const getDeviceModel = function (
 		 * });
 		 *
 		 * @example
-		 * balena.models.device.getManifestByApplication('MyApp', function(error, manifest) {
+		 * balena.models.device.getManifestByApplication('myorganization/myapp', function(error, manifest) {
 		 * 	if (error) throw error;
 		 * 	console.log(manifest);
 		 * });
 		 */
 		getManifestByApplication: async (
-			nameOrSlugOrId: string | number,
+			slugOrId: string | number,
 		): Promise<DeviceTypeJson.DeviceType> => {
 			const applicationOptions = {
 				$select: 'id',
@@ -1325,7 +1325,7 @@ const getDeviceModel = function (
 			} as const;
 
 			const app = (await applicationModel().get(
-				nameOrSlugOrId,
+				slugOrId,
 				applicationOptions,
 			)) as PineTypedResult<Application, typeof applicationOptions>;
 			return await exports.getManifestBySlug(app.is_for__device_type[0].slug);
@@ -1357,7 +1357,7 @@ const getDeviceModel = function (
 		 * @function
 		 * @memberof balena.models.device
 		 *
-		 * @param {String|Number} applicationNameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String|Number} applicationSlugOrId - application slug (string) or id (number)
 		 * @param {String} uuid - device uuid
 		 *
 		 * @fulfil {Object} Device registration info ({ id: "...", uuid: "...", api_key: "..." })
@@ -1365,7 +1365,7 @@ const getDeviceModel = function (
 		 *
 		 * @example
 		 * var uuid = balena.models.device.generateUniqueKey();
-		 * balena.models.device.register('MyApp', uuid).then(function(registrationInfo) {
+		 * balena.models.device.register('myorganization/myapp', uuid).then(function(registrationInfo) {
 		 * 	console.log(registrationInfo);
 		 * });
 		 *
@@ -1377,13 +1377,13 @@ const getDeviceModel = function (
 		 *
 		 * @example
 		 * var uuid = balena.models.device.generateUniqueKey();
-		 * balena.models.device.register('MyApp', uuid, function(error, registrationInfo) {
+		 * balena.models.device.register('myorganization/myapp', uuid, function(error, registrationInfo) {
 		 * 	if (error) throw error;
 		 * 	console.log(registrationInfo);
 		 * });
 		 */
 		async register(
-			applicationNameOrSlugOrId: string | number,
+			applicationSlugOrId: string | number,
 			uuid: string,
 		): Promise<{
 			id: number;
@@ -1397,9 +1397,9 @@ const getDeviceModel = function (
 
 			const [userId, apiKey, application] = await Promise.all([
 				sdkInstance.auth.getUserId(),
-				applicationModel().generateProvisioningKey(applicationNameOrSlugOrId),
+				applicationModel().generateProvisioningKey(applicationSlugOrId),
 				applicationModel().get(
-					applicationNameOrSlugOrId,
+					applicationSlugOrId,
 					applicationOptions,
 				) as Promise<PineTypedResult<Application, typeof applicationOptions>>,
 			]);
@@ -2471,13 +2471,13 @@ const getDeviceModel = function (
 			 * @function
 			 * @memberof balena.models.device.tags
 			 *
-			 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+			 * @param {String|Number} slugOrId - application slug (string) or id (number)
 			 * @param {Object} [options={}] - extra pine options to use
 			 * @fulfil {Object[]} - device tags
 			 * @returns {Promise}
 			 *
 			 * @example
-			 * balena.models.device.tags.getAllByApplication('MyApp').then(function(tags) {
+			 * balena.models.device.tags.getAllByApplication('myorganization/myapp').then(function(tags) {
 			 * 	console.log(tags);
 			 * });
 			 *
@@ -2487,19 +2487,19 @@ const getDeviceModel = function (
 			 * });
 			 *
 			 * @example
-			 * balena.models.device.tags.getAllByApplication('MyApp', function(error, tags) {
+			 * balena.models.device.tags.getAllByApplication('myorganization/myapp', function(error, tags) {
 			 * 	if (error) throw error;
 			 * 	console.log(tags)
 			 * });
 			 */
 			async getAllByApplication(
-				nameOrSlugOrId: string | number,
+				slugOrId: string | number,
 				options?: PineOptions<DeviceTag>,
 			): Promise<DeviceTag[]> {
 				if (options == null) {
 					options = {};
 				}
-				const { id } = await applicationModel().get(nameOrSlugOrId, {
+				const { id } = await applicationModel().get(slugOrId, {
 					$select: 'id',
 				});
 				return await tagsModel.getAll(
@@ -2663,13 +2663,13 @@ const getDeviceModel = function (
 			 * @function
 			 * @memberof balena.models.device.configVar
 			 *
-			 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+			 * @param {String|Number} slugOrId - application slug (string) or id (number)
 			 * @param {Object} [options={}] - extra pine options to use
 			 * @fulfil {Object[]} - device config variables
 			 * @returns {Promise}
 			 *
 			 * @example
-			 * balena.models.device.configVar.getAllByApplication('MyApp').then(function(vars) {
+			 * balena.models.device.configVar.getAllByApplication('myorganization/myapp').then(function(vars) {
 			 * 	console.log(vars);
 			 * });
 			 *
@@ -2679,20 +2679,20 @@ const getDeviceModel = function (
 			 * });
 			 *
 			 * @example
-			 * balena.models.device.configVar.getAllByApplication('MyApp', function(error, vars) {
+			 * balena.models.device.configVar.getAllByApplication('myorganization/myapp', function(error, vars) {
 			 * 	if (error) throw error;
 			 * 	console.log(vars)
 			 * });
 			 */
 			async getAllByApplication(
-				nameOrSlugOrId: string | number,
+				slugOrId: string | number,
 				options?: PineOptions<DeviceVariable>,
 			): Promise<DeviceVariable[]> {
 				if (options == null) {
 					options = {};
 				}
 
-				const { id } = await applicationModel().get(nameOrSlugOrId, {
+				const { id } = await applicationModel().get(slugOrId, {
 					$select: 'id',
 				});
 				return await configVarModel.getAll(
@@ -2849,13 +2849,13 @@ const getDeviceModel = function (
 			 * @function
 			 * @memberof balena.models.device.envVar
 			 *
-			 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+			 * @param {String|Number} slugOrId - application slug (string) or id (number)
 			 * @param {Object} [options={}] - extra pine options to use
 			 * @fulfil {Object[]} - device environment variables
 			 * @returns {Promise}
 			 *
 			 * @example
-			 * balena.models.device.envVar.getAllByApplication('MyApp').then(function(vars) {
+			 * balena.models.device.envVar.getAllByApplication('myorganization/myapp').then(function(vars) {
 			 * 	console.log(vars);
 			 * });
 			 *
@@ -2865,20 +2865,20 @@ const getDeviceModel = function (
 			 * });
 			 *
 			 * @example
-			 * balena.models.device.envVar.getAllByApplication('MyApp', function(error, vars) {
+			 * balena.models.device.envVar.getAllByApplication('myorganization/myapp', function(error, vars) {
 			 * 	if (error) throw error;
 			 * 	console.log(vars)
 			 * });
 			 */
 			async getAllByApplication(
-				nameOrSlugOrId: string | number,
+				slugOrId: string | number,
 				options?: PineOptions<DeviceVariable>,
 			): Promise<DeviceVariable[]> {
 				if (options == null) {
 					options = {};
 				}
 
-				const { id } = await applicationModel().get(nameOrSlugOrId, {
+				const { id } = await applicationModel().get(slugOrId, {
 					$select: 'id',
 				});
 				return await envVarModel.getAll(
@@ -3060,13 +3060,13 @@ const getDeviceModel = function (
 			 * @function
 			 * @memberof balena.models.device.serviceVar
 			 *
-			 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+			 * @param {String|Number} slugOrId - application slug (string) or id (number)
 			 * @param {Object} [options={}] - extra pine options to use
 			 * @fulfil {Object[]} - service variables
 			 * @returns {Promise}
 			 *
 			 * @example
-			 * balena.models.device.serviceVar.getAllByApplication('MyApp').then(function(vars) {
+			 * balena.models.device.serviceVar.getAllByApplication('myorganization/myapp').then(function(vars) {
 			 * 	console.log(vars);
 			 * });
 			 *
@@ -3076,20 +3076,20 @@ const getDeviceModel = function (
 			 * });
 			 *
 			 * @example
-			 * balena.models.device.serviceVar.getAllByApplication('MyApp', function(error, vars) {
+			 * balena.models.device.serviceVar.getAllByApplication('myorganization/myapp', function(error, vars) {
 			 * 	if (error) throw error;
 			 * 	console.log(vars)
 			 * });
 			 */
 			async getAllByApplication(
-				nameOrSlugOrId: string | number,
+				slugOrId: string | number,
 				options?: PineOptions<DeviceServiceEnvironmentVariable>,
 			): Promise<DeviceServiceEnvironmentVariable[]> {
 				if (options == null) {
 					options = {};
 				}
 
-				const { id } = await applicationModel().get(nameOrSlugOrId, {
+				const { id } = await applicationModel().get(slugOrId, {
 					$select: 'id',
 				});
 				return await pine.get({

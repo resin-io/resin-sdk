@@ -38,7 +38,7 @@ const getApplicationInviteModel = function (
 	deps: InjectedDependenciesParam,
 	opts: InjectedOptionsParam,
 	getApplication: (
-		nameOrSlugOrId: string | number,
+		slugOrId: string | number,
 		options?: PineOptions<Application>,
 	) => Promise<Application>,
 ) {
@@ -89,13 +89,13 @@ const getApplicationInviteModel = function (
 		 * @description
 		 * This method returns all invites for a specific application.
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String|Number} slugOrId - application slug (string) or id (number)
 		 * @param {Object} [options={}] - extra pine options to use
 		 * @fulfil {Object[]} - invites
 		 * @returns {Promise}
 		 *
 		 * @example
-		 * balena.models.application.invite.getAllByApplication('MyApp').then(function(invites) {
+		 * balena.models.application.invite.getAllByApplication('myorganization/myapp').then(function(invites) {
 		 * 	console.log(invites);
 		 * });
 		 *
@@ -110,10 +110,10 @@ const getApplicationInviteModel = function (
 		 * });
 		 */
 		async getAllByApplication(
-			nameOrSlugOrId: number | string,
+			slugOrId: number | string,
 			options: PineOptions<ApplicationInvite> = {},
 		): Promise<ApplicationInvite[]> {
-			const { id } = await getApplication(nameOrSlugOrId, {
+			const { id } = await getApplication(slugOrId, {
 				$select: 'id',
 			});
 			return await exports.getAll(
@@ -133,7 +133,7 @@ const getApplicationInviteModel = function (
 		 *
 		 * @description This method invites a user by their email to an application.
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String|Number} slugOrId - application slug (string) or id (number)
 		 * @param {Object} options - invite creation parameters
 		 * @param {String} options.invitee - the email/balena_username of the invitee
 		 * @param {String} [options.roleName="developer"] - the role name to be granted to the invitee
@@ -143,7 +143,7 @@ const getApplicationInviteModel = function (
 		 * @returns {Promise}
 		 *
 		 * @example
-		 * balena.models.application.invite.create('MyApp', { invitee: "invitee@example.org", roleName: "developer", message: "join my app" }).then(function(invite) {
+		 * balena.models.application.invite.create('myorganization/myapp', { invitee: "invitee@example.org", roleName: "developer", message: "join my app" }).then(function(invite) {
 		 * 	console.log(invite);
 		 * });
 		 *
@@ -153,11 +153,11 @@ const getApplicationInviteModel = function (
 		 * });
 		 */
 		async create(
-			nameOrSlugOrId: string | number,
+			slugOrId: string | number,
 			{ invitee, roleName, message }: ApplicationInviteOptions,
 		): Promise<ApplicationInvite> {
 			const [{ id }, roles] = await Promise.all([
-				getApplication(nameOrSlugOrId, { $select: 'id' }),
+				getApplication(slugOrId, { $select: 'id' }),
 				roleName
 					? pine.get({
 							resource: 'application_membership_role',

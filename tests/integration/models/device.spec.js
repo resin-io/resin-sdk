@@ -132,11 +132,12 @@ describe('Device Model', function () {
 							}),
 						);
 
-						it('should be rejected if the application name does not exist', function () {
-							const promise =
-								balena.models.device.getManifestByApplication('HelloWorldApp');
+						it('should be rejected if the application slug does not exist', function () {
+							const promise = balena.models.device.getManifestByApplication(
+								`${ctx.initialOrg.handle}/helloworldapp`,
+							);
 							return expect(promise).to.be.rejectedWith(
-								'Application not found: HelloWorldApp',
+								`Application not found: ${ctx.initialOrg.handle}/helloworldapp`,
 							);
 						});
 
@@ -152,11 +153,14 @@ describe('Device Model', function () {
 			});
 
 			describe('balena.models.device.register()', function () {
-				it('should be rejected if the application name does not exist', function () {
+				it(`should be rejected if the application slug does not exist`, function () {
 					const uuid = balena.models.device.generateUniqueKey();
-					const promise = balena.models.device.register('HelloWorldApp', uuid);
+					const promise = balena.models.device.register(
+						`${this.initialOrg.handle}/helloworldapp`,
+						uuid,
+					);
 					return expect(promise).to.be.rejectedWith(
-						'Application not found: HelloWorldApp',
+						`Application not found: ${this.initialOrg.handle}/helloworldapp`,
 					);
 				});
 
@@ -185,7 +189,7 @@ describe('Device Model', function () {
 							const uuid = balena.models.device.generateUniqueKey();
 							await balena.models.device.register(this.application[prop], uuid);
 							const apps = await balena.models.device.getAllByApplication(
-								this.application.app_name,
+								this.application.slug,
 							);
 							expect(apps).to.have.length(i + 1);
 						});
@@ -250,11 +254,12 @@ describe('Device Model', function () {
 						}),
 					);
 
-					it('should be rejected if the application name does not exist', function () {
-						const promise =
-							balena.models.device.getAllByApplication('HelloWorldApp');
+					it('should be rejected if the application slug does not exist', function () {
+						const promise = balena.models.device.getAllByApplication(
+							`${ctx.initialOrg.handle}/helloworldapp`,
+						);
 						return expect(promise).to.be.rejectedWith(
-							'Application not found: HelloWorldApp',
+							`Application not found: ${ctx.initialOrg.handle}/helloworldapp`,
 						);
 					});
 
@@ -604,7 +609,9 @@ describe('Device Model', function () {
 						ctx = this;
 					});
 
-					after(() => balena.models.application.remove('ChildApp'));
+					after(async function () {
+						await balena.models.application.remove(this.childApplication.id);
+					});
 
 					parallel('', function () {
 						it('should get the device given the right parent uuid', async function () {
@@ -2066,7 +2073,7 @@ describe('Device Model', function () {
 				const uuid =
 					this.shortUuid + balena.models.device.generateUniqueKey().slice(7);
 				const deviceInfo = await balena.models.device.register(
-					this.application.app_name,
+					this.application.slug,
 					uuid,
 				);
 				return (this.deviceInfo = deviceInfo);
@@ -2098,8 +2105,8 @@ describe('Device Model', function () {
 					this.uuidRoot + balena.models.device.generateUniqueKey().slice(16);
 
 				return Promise.all([
-					balena.models.device.register(this.application.app_name, uuid1),
-					balena.models.device.register(this.application.app_name, uuid2),
+					balena.models.device.register(this.application.slug, uuid1),
+					balena.models.device.register(this.application.slug, uuid2),
 				]);
 			});
 
@@ -2791,7 +2798,7 @@ describe('Device Model', function () {
 
 			const uuid = balena.models.device.generateUniqueKey();
 			this.deviceInfo = await balena.models.device.register(
-				this.application1.app_name,
+				this.application1.slug,
 				uuid,
 			);
 		});
@@ -2867,10 +2874,10 @@ describe('Device Model', function () {
 				it('should be rejected with an incompatibility error', function () {
 					const promise = balena.models.device.move(
 						this.deviceInfo.uuid,
-						this.applicationIncompatibleDT.app_name,
+						this.applicationIncompatibleDT.slug,
 					);
 					return expect(promise).to.be.rejectedWith(
-						`Incompatible application: ${this.applicationIncompatibleDT.app_name}`,
+						`Incompatible application: ${this.applicationIncompatibleDT.slug}`,
 					);
 				});
 			});
@@ -2942,9 +2949,9 @@ describe('Device Model', function () {
 				it(`should be rejected with an incompatibility error when trying to move an ${deviceArch} device to an ${appArch} application`, function () {
 					const device = this.devices[deviceArch];
 					const app = this.apps[appArch];
-					const promise = balena.models.device.move(device.uuid, app.app_name);
+					const promise = balena.models.device.move(device.uuid, app.slug);
 					return expect(promise).to.be.rejectedWith(
-						`Incompatible application: ${app.app_name}`,
+						`Incompatible application: ${app.slug}`,
 					);
 				});
 			});
@@ -2961,7 +2968,7 @@ describe('Device Model', function () {
 					const applicationName = await balena.models.device.getApplicationName(
 						device.id,
 					);
-					return expect(applicationName).to.equal(app.app_name);
+					expect(applicationName).to.equal(app.app_name);
 				});
 			});
 		});

@@ -464,7 +464,7 @@ const getOsModel = function (
 	 * Note that an OS version is required. For versions < 2.7.8, config
 	 * generation is only supported when using a session token, not an API key.
 	 *
-	 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number).
+	 * @param {String|Number} slugOrId - application slug (string) or id (number).
 	 * @param {Object} options - OS configuration options to use.
 	 * @param {String} options.version - Required: the OS version of the image.
 	 * @param {String} [options.network='ethernet'] - The network type that
@@ -482,7 +482,7 @@ const getOsModel = function (
 	 * @returns {Promise}
 	 *
 	 * @example
-	 * balena.models.os.getConfig('MyApp', { version: ''2.12.7+rev1.prod'' }).then(function(config) {
+	 * balena.models.os.getConfig('myorganization/myapp', { version: ''2.12.7+rev1.prod'' }).then(function(config) {
 	 * 	fs.writeFile('foo/bar/config.json', JSON.stringify(config));
 	 * });
 	 *
@@ -490,13 +490,13 @@ const getOsModel = function (
 	 * 	fs.writeFile('foo/bar/config.json', JSON.stringify(config));
 	 * });
 	 *
-	 * balena.models.os.getConfig('MyApp', { version: ''2.12.7+rev1.prod'' }, function(error, config) {
+	 * balena.models.os.getConfig('myorganization/myapp', { version: ''2.12.7+rev1.prod'' }, function(error, config) {
 	 * 	if (error) throw error;
 	 * 	fs.writeFile('foo/bar/config.json', JSON.stringify(config));
 	 * });
 	 */
 	const getConfig = async function (
-		nameOrSlugOrId: string | number,
+		slugOrId: string | number,
 		options: ImgConfigOptions,
 	): Promise<object> {
 		if (!options?.version) {
@@ -506,7 +506,7 @@ const getOsModel = function (
 		options.network = options.network ?? 'ethernet';
 
 		try {
-			const applicationId = await applicationModel()._getId(nameOrSlugOrId);
+			const applicationId = await applicationModel()._getId(slugOrId);
 
 			const { body } = await request.send({
 				method: 'POST',
@@ -517,7 +517,7 @@ const getOsModel = function (
 			return body;
 		} catch (err) {
 			if (isNotFoundResponse(err)) {
-				treatAsMissingApplication(nameOrSlugOrId, err);
+				treatAsMissingApplication(slugOrId, err);
 			}
 			throw err;
 		}
