@@ -940,6 +940,7 @@ const getApplicationModel = function (
 		 * @memberof balena.models.application
 		 *
 		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String} keyName - Provisioning key name (string) - [OPTIONAL]
 		 * @fulfil {String} - device provisioning key
 		 * @returns {Promise}
 		 *
@@ -961,13 +962,20 @@ const getApplicationModel = function (
 		 */
 		generateProvisioningKey: async (
 			nameOrSlugOrId: string | number,
+			keyName?: string,
 		): Promise<string> => {
 			try {
 				const applicationId = await getId(nameOrSlugOrId);
 				const { body } = await request.send({
 					method: 'POST',
-					url: `/api-key/application/${applicationId}/provisioning`,
+					url: '/api-key/v1/',
 					baseUrl: apiUrl,
+					body: {
+						actorType: 'application',
+						actorTypeId: applicationId,
+						roles: ['provisioning-api-key'],
+						name: keyName,
+					},
 				});
 				return body;
 			} catch (err) {
