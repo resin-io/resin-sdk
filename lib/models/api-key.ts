@@ -258,16 +258,6 @@ const getApiKeysModel = function (
 				resource: 'api_key',
 				id,
 				body,
-				options: {
-					// the only way to reason whether
-					// it's a named user api key is whether
-					// it has a name
-					$filter: {
-						name: {
-							$ne: null,
-						},
-					},
-				},
 			});
 		},
 
@@ -293,15 +283,6 @@ const getApiKeysModel = function (
 			await pine.delete({
 				resource: 'api_key',
 				id,
-				options: {
-					// so that we don't accidentally delete
-					// a non named user api key
-					$filter: {
-						name: {
-							$ne: null,
-						},
-					},
-				},
 			});
 		},
 	};
