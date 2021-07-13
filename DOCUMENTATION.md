@@ -5295,7 +5295,7 @@ balena.models.apiKey.create(apiKeyName, function(error, apiKey) {
 
 ##### apiKey.getAll([options]) ⇒ <code>Promise</code>
 **Kind**: static method of [<code>apiKey</code>](#balena.models.apiKey)  
-**Summary**: Get all API keys  
+**Summary**: Get all accessible API keys  
 **Access**: public  
 **Fulfil**: <code>Object[]</code> - apiKeys  
 

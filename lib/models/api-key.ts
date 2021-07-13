@@ -89,7 +89,7 @@ const getApiKeysModel = function (
 		},
 
 		/**
-		 * @summary Get all API keys
+		 * @summary Get all accessible API keys
 		 * @name getAll
 		 * @public
 		 * @function
@@ -110,21 +110,13 @@ const getApiKeysModel = function (
 		 * 	console.log(apiKeys);
 		 * });
 		 */
-		getAll(
+		async getAll(
 			options: BalenaSdk.PineOptions<BalenaSdk.ApiKey> = {},
 		): Promise<BalenaSdk.ApiKey[]> {
-			return pine.get({
+			return await pine.get({
 				resource: 'api_key',
 				options: mergePineOptions(
 					{
-						// the only way to reason whether
-						// it's a named user api key is whether
-						// it has a name
-						$filter: {
-							name: {
-								$ne: null,
-							},
-						},
 						$orderby: 'name asc',
 					},
 					options,
@@ -157,9 +149,8 @@ const getApiKeysModel = function (
 		async getAllNamedUserApiKeys(
 			options: BalenaSdk.PineOptions<BalenaSdk.ApiKey> = {},
 		): Promise<BalenaSdk.ApiKey[]> {
-			return await pine.get({
-				resource: 'api_key',
-				options: mergePineOptions(
+			return await exports.getAll(
+				mergePineOptions(
 					{
 						$filter: {
 							is_of__actor: await sdkInstance.auth.getUserActorId(),
@@ -170,11 +161,10 @@ const getApiKeysModel = function (
 								$ne: null,
 							},
 						},
-						$orderby: 'name asc',
 					},
 					options,
 				),
-			});
+			);
 		},
 
 		/**
@@ -208,9 +198,8 @@ const getApiKeysModel = function (
 				$select: 'actor',
 			});
 
-			return await pine.get({
-				resource: 'api_key',
-				options: mergePineOptions(
+			return await exports.getAll(
+				mergePineOptions(
 					{
 						$filter: {
 							is_of__actor: actor,
@@ -219,7 +208,7 @@ const getApiKeysModel = function (
 					},
 					options,
 				),
-			});
+			);
 		},
 
 		/**

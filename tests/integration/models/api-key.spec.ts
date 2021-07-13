@@ -32,8 +32,13 @@ describe('API Key model', function () {
 		givenLoggedInUser(before);
 
 		describe('given no named api keys', () => {
-			it('should retrieve an empty array', async () => {
-				const apiKeys = await balena.models.apiKey.getAll();
+			it('should retrieve an empty array', async function () {
+				const apiKeys = await balena.models.apiKey.getAll({
+					$filter: {
+						is_of__actor: await balena.auth.getUserActorId(),
+						name: { $ne: null },
+					},
+				});
 				expect(apiKeys).to.be.an('array');
 				expect(apiKeys).to.have.lengthOf(0);
 			});
@@ -47,8 +52,13 @@ describe('API Key model', function () {
 				]),
 			);
 
-			it('should be able to retrieve all api keys created', async () => {
-				const apiKeys = await balena.models.apiKey.getAll();
+			it('should be able to retrieve all api keys created', async function () {
+				const apiKeys = await balena.models.apiKey.getAll({
+					$filter: {
+						is_of__actor: await balena.auth.getUserActorId(),
+						name: { $ne: null },
+					},
+				});
 				expect(apiKeys).to.be.an('array');
 				assertDeepMatchAndLength(apiKeys, [
 					{
