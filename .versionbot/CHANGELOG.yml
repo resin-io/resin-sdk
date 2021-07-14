@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update generateProvisioningKey to include keyName
+      hash: f493f044e22e85ed79fb75f6e5142ba37a344e3c
+      body: ''
+      footer:
+        Change-Type: minor
+        change-type: minor
+        Signed-off-by: Nitish Agarwal 1592163+nitishagar@users.noreply.github.com
+        signed-off-by: Nitish Agarwal 1592163+nitishagar@users.noreply.github.com
+      author: Nitish Agarwal
+      nested: []
+  version: 15.43.0
+  date: 2021-07-14T06:22:31.788Z
+- commits:
     - subject: 'tests/api-key: Fix a race condition in the apiKey.create() tests'
       hash: d55c3633644cdceac98078abb210bd1f6e8bc61e
       body: ''
