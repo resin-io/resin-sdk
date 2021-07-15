@@ -108,6 +108,7 @@
     "balena-request": "^11.4.0",
     "balena-semver": "^2.3.0",
     "balena-settings-client": "^4.0.6",
+    "handlebars": "^4.7.7",
     "lodash": "^4.17.21",
     "memoizee": "^0.4.15",
     "moment": "^2.29.1",

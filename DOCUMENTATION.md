@@ -265,6 +265,8 @@ const sdk = fromSharedOptions();
             * [.getAllSupported([options])](#balena.models.deviceType.getAllSupported) ⇒ <code>Promise</code>
             * [.getBySlugOrName(slugOrName)](#balena.models.deviceType.getBySlugOrName) ⇒ <code>Promise</code>
             * [.getName(deviceTypeSlug)](#balena.models.deviceType.getName) ⇒ <code>Promise</code>
+            * [.getInterpolatedPartials(deviceTypeSlug, initial)](#balena.models.deviceType.getInterpolatedPartials) ⇒ <code>Promise</code>
+            * [.getInstructions(deviceTypeSlug)](#balena.models.deviceType.getInstructions) ⇒ <code>Promise</code>
             * [.getSlugByName(deviceTypeName)](#balena.models.deviceType.getSlugByName) ⇒ <code>Promise</code>
         * [.apiKey](#balena.models.apiKey) : <code>object</code>
             * [.create(name, [description])](#balena.models.apiKey.create) ⇒ <code>Promise</code>
@@ -636,6 +638,8 @@ balena.models.device.get(123).catch(function (error) {
         * [.getAllSupported([options])](#balena.models.deviceType.getAllSupported) ⇒ <code>Promise</code>
         * [.getBySlugOrName(slugOrName)](#balena.models.deviceType.getBySlugOrName) ⇒ <code>Promise</code>
         * [.getName(deviceTypeSlug)](#balena.models.deviceType.getName) ⇒ <code>Promise</code>
+        * [.getInterpolatedPartials(deviceTypeSlug, initial)](#balena.models.deviceType.getInterpolatedPartials) ⇒ <code>Promise</code>
+        * [.getInstructions(deviceTypeSlug)](#balena.models.deviceType.getInstructions) ⇒ <code>Promise</code>
         * [.getSlugByName(deviceTypeName)](#balena.models.deviceType.getSlugByName) ⇒ <code>Promise</code>
     * [.apiKey](#balena.models.apiKey) : <code>object</code>
         * [.create(name, [description])](#balena.models.apiKey.create) ⇒ <code>Promise</code>
@@ -5165,6 +5169,8 @@ balena.models.device.restartService('7cf02a6', 123, function(error) {
     * [.getAllSupported([options])](#balena.models.deviceType.getAllSupported) ⇒ <code>Promise</code>
     * [.getBySlugOrName(slugOrName)](#balena.models.deviceType.getBySlugOrName) ⇒ <code>Promise</code>
     * [.getName(deviceTypeSlug)](#balena.models.deviceType.getName) ⇒ <code>Promise</code>
+    * [.getInterpolatedPartials(deviceTypeSlug, initial)](#balena.models.deviceType.getInterpolatedPartials) ⇒ <code>Promise</code>
+    * [.getInstructions(deviceTypeSlug)](#balena.models.deviceType.getInstructions) ⇒ <code>Promise</code>
     * [.getSlugByName(deviceTypeName)](#balena.models.deviceType.getSlugByName) ⇒ <code>Promise</code>
 
 <a name="balena.models.deviceType.get"></a>
@@ -5311,6 +5317,76 @@ balena.models.deviceType.getName('raspberry-pi', function(error, deviceTypeName)
 	if (error) throw error;
 	console.log(deviceTypeName);
 	// Raspberry Pi
+});
+```
+<a name="balena.models.deviceType.getInterpolatedPartials"></a>
+
+##### deviceType.getInterpolatedPartials(deviceTypeSlug, initial) ⇒ <code>Promise</code>
+**Kind**: static method of [<code>deviceType</code>](#balena.models.deviceType)  
+**Summary**: Get a contract with resolved partial templates  
+**Access**: public  
+**Fulfil**: <code>Contract</code> - device type contract with resolved partials  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| deviceTypeSlug | <code>String</code> | device type slug |
+| initial | <code>any</code> | Other contract values necessary for interpreting contracts |
+
+**Example**  
+```js
+balena.models.deviceType.getInterpolatedPartials('raspberry-pi').then(function(contract) {
+ for (const partial in contract.partials) {
+ 	console.log(`${partial}: ${contract.partials[partial]}`);
+ }
+	// bootDevice: ["Connect power to the Raspberry Pi (v1 / Zero / Zero W)"]
+});
+```
+<a name="balena.models.deviceType.getInstructions"></a>
+
+##### deviceType.getInstructions(deviceTypeSlug) ⇒ <code>Promise</code>
+**Kind**: static method of [<code>deviceType</code>](#balena.models.deviceType)  
+**Summary**: Get instructions for installing a host OS on a given device type  
+**Access**: public  
+**Fulfil**: <code>String[]</code> - step by step instructions for installing the host OS to the device  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| deviceTypeSlug | <code>String</code> | device type slug |
+
+**Example**  
+```js
+balena.models.deviceType.getInstructions('raspberry-pi').then(function(instructions) {
+ for (let instruction of instructions.values()) {
+	 console.log(instruction);
+ }
+ // Insert the sdcard to the host machine.
+ // Write the BalenaOS file you downloaded to the sdcard. We recommend using <a href="http://www.etcher.io/">Etcher</a>.
+ // Wait for writing of BalenaOS to complete.
+ // Remove the sdcard from the host machine.
+ // Insert the freshly flashed sdcard into the Raspberry Pi (v1 / Zero / Zero W).
+ // Connect power to the Raspberry Pi (v1 / Zero / Zero W) to boot the device.
+});
+```
+**Example**  
+```js
+balena.models.deviceType.getInstructions('raspberry-pi', baseInstructions = {
+ `Use the form on the left to configure and download {{name}} for your new {{deviceType.name}}.
+ {{#each instructions}}
+  {{{this}}}
+ {{/each}}
+ Your device should appear in your application dashboard within a few minutes. Have fun!`
+}).then(function(instructions) {
+ for (let instruction of instructions.values()) {
+	 console.log(instruction);
+ }
+ // Use the form on the left to configure and download BalenaOS for your new Raspberry Pi (v1 / Zero / Zero W).
+ // Insert the sdcard to the host machine.
+ // Write the BalenaOS file you downloaded to the sdcard. We recommend using <a href="http://www.etcher.io/">Etcher</a>.
+ // Wait for writing of BalenaOS to complete.
+ // Remove the sdcard from the host machine.
+ // Insert the freshly flashed sdcard into the Raspberry Pi (v1 / Zero / Zero W).
+ // Connect power to the Raspberry Pi (v1 / Zero / Zero W) to boot the device.
+ // Your device should appear in your application dashboard within a few minutes. Have fun!
 });
 ```
 <a name="balena.models.deviceType.getSlugByName"></a>

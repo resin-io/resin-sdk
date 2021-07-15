@@ -1,4 +1,4 @@
-import { AnyObject } from '../../typings/utils';
+import { AnyObject, Dictionary } from '../../typings/utils';
 
 export interface Contract {
 	slug: string;
@@ -15,5 +15,5 @@ export interface Contract {
 	requires?: string[];
 	provides?: string[];
 	composedOf?: AnyObject;
-	partials?: AnyObject;
+	partials?: Dictionary<string[]>;
 }

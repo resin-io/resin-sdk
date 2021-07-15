@@ -16,8 +16,72 @@ limitations under the License.
 
 import type { InjectedDependenciesParam, PineOptions } from '..';
 import { DeviceType } from '../types/models';
+import { Contract } from '../types/contract';
 import { mergePineOptions } from '../util';
 import * as errors from 'balena-errors';
+import * as Handlebars from 'handlebars';
+import cloneDeep = require('lodash/cloneDeep');
+
+// Hardcoded host OS contract, this should be moved. Here for initial implementatin and testing purposes
+const baseHostOS: Contract = {
+	slug: 'balenaOS',
+	type: 'temp',
+	name: 'BalenaOS',
+	partials: {
+		internalFlash: [
+			`{{#each deviceType.partials.connectDevice}}{{{this}}} {{/each}}`,
+			`Write the {{name}} file you downloaded to the {{deviceType.name}}. We recommend using <a href="http://www.etcher.io/">Etcher</a>.`,
+			`Wait for writing of {{name}} to complete.`,
+			`{{#each deviceType.partials.disconnectDevice}}{{{this}}} {{/each}}`,
+			`{{{deviceType.partials.bootDevice}}} to boot the device.`,
+		],
+		externalFlash: [
+			`Insert the {{deviceType.data.media.installation}} to the host machine.`,
+			`Write the {{name}} file you downloaded to the {{deviceType.data.media.installation}}. We recommend using <a href="http://www.etcher.io/">Etcher</a>.`,
+			`Wait for writing of {{name}} to complete.`,
+			`Remove the {{deviceType.data.media.installation}} from the host machine.`,
+			`Insert the freshly flashed {{deviceType.data.media.installation}} into the {{deviceType.name}}.`,
+			`<strong role="alert">Warning!</strong> This will also completely erase internal storage medium, so please make a backup first.`,
+			`{{#each deviceType.partials.bootDeviceExternal}}{{{this}}} {{/each}}`,
+			`Wait for the {{deviceType.name}} to finish flashing and shutdown. {{#if deviceType.partials.flashIndicator}}Please wait until {{deviceType.partials.flashIndicator}}.{{/if}}`,
+			`Remove the {{deviceType.data.media.installation}} from the {{deviceType.name}}.`,
+			`{{#each deviceType.partials.bootDeviceInternal}}{{{this}}} {{/each}}`,
+			`{{{deviceType.partials.bootDevice}}} to boot the device.`,
+		],
+		externalBoot: [
+			`Insert the {{deviceType.data.media.installation}} to the host machine.`,
+			`Write the {{name}} file you downloaded to the {{deviceType.data.media.installation}}. We recommend using <a href="http://www.etcher.io/">Etcher</a>.`,
+			`Wait for writing of {{name}} to complete.`,
+			`Remove the {{deviceType.data.media.installation}} from the host machine.`,
+			`Insert the freshly flashed {{deviceType.data.media.installation}} into the {{deviceType.name}}.`,
+			`{{{deviceType.partials.bootDevice}}} to boot the device.`,
+		],
+		custom: [
+			`{{#each deviceType.partials.instructions}}
+				{{{this}}}
+			{{/each}}`,
+			`{{{deviceType.partials.bootDevice}}} to boot the device.`,
+		],
+	},
+};
+
+const interpolatedPartials = (contract: Contract, initial: any = {}) => {
+	const fullInitial = { ...contract, ...initial };
+	if (contract.partials) {
+		const partials = contract.partials;
+		return Object.keys(partials).reduce(
+			(interpolated: any, partialKey) => {
+				interpolated.partials[partialKey] = partials[partialKey].map(
+					(partial: string) => Handlebars.compile(partial)(interpolated),
+				);
+				return interpolated;
+			},
+			{ ...fullInitial },
+		);
+	} else {
+		return fullInitial;
+	}
+};
 
 const getDeviceTypeModel = function (deps: InjectedDependenciesParam) {
 	const { pine } = deps;
@@ -249,6 +313,118 @@ const getDeviceTypeModel = function (deps: InjectedDependenciesParam) {
 			return (
 				await exports.getBySlugOrName(deviceTypeSlug, { $select: 'name' })
 			).name;
+		},
+
+		/**
+		 * @summary Get a contract with resolved partial templates
+		 * @name getInterpolatedPartials
+		 * @public
+		 * @function
+		 * @memberof balena.models.deviceType
+		 *
+		 * @param {String} deviceTypeSlug - device type slug
+		 * @param {any} initial - Other contract values necessary for interpreting contracts
+		 * @fulfil {Contract} - device type contract with resolved partials
+		 * @returns {Promise}
+		 *
+		 * @example
+		 * balena.models.deviceType.getInterpolatedPartials('raspberry-pi').then(function(contract) {
+		 *  for (const partial in contract.partials) {
+		 *  	console.log(`${partial}: ${contract.partials[partial]}`);
+		 *  }
+		 * 	// bootDevice: ["Connect power to the Raspberry Pi (v1 / Zero / Zero W)"]
+		 * });
+		 */
+		getInterpolatedPartials: async (
+			deviceTypeSlug: string,
+			initial: any = {},
+		): Promise<Contract> => {
+			const contract = (
+				await exports.getBySlugOrName(deviceTypeSlug, { $select: 'contract' })
+			).contract;
+			if (!contract) {
+				throw new Error('Slug does not contain contract');
+			}
+			return interpolatedPartials(contract, initial);
+		},
+
+		/**
+		 * @summary Get instructions for installing a host OS on a given device type
+		 * @name getInstructions
+		 * @public
+		 * @function
+		 * @memberof balena.models.deviceType
+		 *
+		 * @param {String} deviceTypeSlug - device type slug
+		 * @fulfil {String[]} - step by step instructions for installing the host OS to the device
+		 * @returns {Promise}
+		 *
+		 * @example
+		 * balena.models.deviceType.getInstructions('raspberry-pi').then(function(instructions) {
+		 *  for (let instruction of instructions.values()) {
+		 * 	 console.log(instruction);
+		 *  }
+		 *  // Insert the sdcard to the host machine.
+		 *  // Write the BalenaOS file you downloaded to the sdcard. We recommend using <a href="http://www.etcher.io/">Etcher</a>.
+		 *  // Wait for writing of BalenaOS to complete.
+		 *  // Remove the sdcard from the host machine.
+		 *  // Insert the freshly flashed sdcard into the Raspberry Pi (v1 / Zero / Zero W).
+		 *  // Connect power to the Raspberry Pi (v1 / Zero / Zero W) to boot the device.
+		 * });
+		 * @example
+		 * balena.models.deviceType.getInstructions('raspberry-pi', baseInstructions = {
+		 *  `Use the form on the left to configure and download {{name}} for your new {{deviceType.name}}.
+		 *  {{#each instructions}}
+		 *   {{{this}}}
+		 *  {{/each}}
+		 *  Your device should appear in your application dashboard within a few minutes. Have fun!`
+		 * }).then(function(instructions) {
+		 *  for (let instruction of instructions.values()) {
+		 * 	 console.log(instruction);
+		 *  }
+		 *  // Use the form on the left to configure and download BalenaOS for your new Raspberry Pi (v1 / Zero / Zero W).
+		 *  // Insert the sdcard to the host machine.
+		 *  // Write the BalenaOS file you downloaded to the sdcard. We recommend using <a href="http://www.etcher.io/">Etcher</a>.
+		 *  // Wait for writing of BalenaOS to complete.
+		 *  // Remove the sdcard from the host machine.
+		 *  // Insert the freshly flashed sdcard into the Raspberry Pi (v1 / Zero / Zero W).
+		 *  // Connect power to the Raspberry Pi (v1 / Zero / Zero W) to boot the device.
+		 *  // Your device should appear in your application dashboard within a few minutes. Have fun!
+		 * });
+		 */
+		getInstructions: async (
+			deviceTypeSlug: string,
+			baseInstructions?: string,
+		): Promise<string[]> => {
+			const contract = (
+				await exports.getBySlugOrName(deviceTypeSlug, { $select: 'contract' })
+			).contract;
+			if (contract) {
+				const installMethod = contract?.data?.installation?.method;
+				if (!installMethod || !contract.partials) {
+					throw new Error(
+						`Install method or instruction partials not defined for ${deviceTypeSlug}`,
+					);
+				}
+				const interpolatedDeviceType = interpolatedPartials(contract);
+				const interpolatedHostOS = interpolatedPartials(cloneDeep(baseHostOS), {
+					deviceType: interpolatedDeviceType,
+				});
+
+				if (baseInstructions) {
+					return Handlebars.compile(baseInstructions)({
+						...interpolatedHostOS,
+						instructions: interpolatedHostOS.partials[installMethod],
+					})
+						.split('\n')
+						.map((s) => s.trim())
+						.filter((s) => s);
+				} else {
+					return interpolatedHostOS.partials[installMethod];
+				}
+			} else {
+				return [];
+			}
 		},
 
 		/**
