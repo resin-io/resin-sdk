@@ -160,6 +160,8 @@ export interface ApiKey {
 	is_of__actor: PineDeferred;
 }
 
+export type ApplicationClassType = 'fleet' | 'block' | 'app';
+
 export interface Application {
 	id: number;
 	created_at: string;
@@ -171,7 +173,7 @@ export interface Application {
 	is_host: boolean;
 	should_track_latest_release: boolean;
 	is_public: boolean;
-	is_of__class: 'fleet' | 'block' | 'app';
+	is_of__class: ApplicationClassType;
 	is_archived: boolean;
 	is_discoverable: boolean;
 	is_stored_at__repository_url: string | null;

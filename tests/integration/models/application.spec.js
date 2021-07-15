@@ -734,6 +734,71 @@ describe('Application Model', function () {
 				});
 			});
 
+			describe('balena.models.application.setRepositoryUrl()', () => {
+				it('...should set a repository url', async function () {
+					const balenaSoundRepoUrl =
+						'https://github.com/balenalabs/balena-sound';
+					const { is_stored_at__repository_url: originalRepositoryUrl } =
+						await balena.models.application.get(this.application.id, {
+							$select: 'is_stored_at__repository_url',
+						});
+					expect(originalRepositoryUrl).to.equal(null);
+
+					await balena.models.application.setRepositoryUrl(
+						this.application.id,
+						balenaSoundRepoUrl,
+					);
+					const { is_stored_at__repository_url: repositoryUrl } =
+						await balena.models.application.get(this.application.id, {
+							$select: 'is_stored_at__repository_url',
+						});
+					expect(repositoryUrl).to.equal(balenaSoundRepoUrl);
+				});
+			});
+
+			describe('balena.models.application.setIsPublic()', () => {
+				it('...should set the application as public', async function () {
+					const { is_public: originalIsPublic } =
+						await balena.models.application.get(this.application.id, {
+							$select: 'is_public',
+						});
+					expect(originalIsPublic).to.not.be.true;
+
+					await balena.models.application.setIsPublic(
+						this.application.id,
+						true,
+					);
+					const { is_public: isPublic } = await balena.models.application.get(
+						this.application.id,
+						{
+							$select: 'is_public',
+						},
+					);
+					expect(isPublic).to.be.true;
+				});
+			});
+
+			describe('balena.models.application.setClass()', () => {
+				it('...should set the application class', async function () {
+					const classParam = 'block';
+					const { is_of__class: originalClass } =
+						await balena.models.application.get(this.application.id, {
+							$select: 'is_of__class',
+						});
+					expect(originalClass).to.not.equal(null);
+
+					await balena.models.application.setClass(
+						this.application.id,
+						classParam,
+					);
+					const { is_of__class: applicationClass } =
+						await balena.models.application.get(this.application.id, {
+							$select: 'is_of__class',
+						});
+					expect(applicationClass).to.equal(classParam);
+				});
+			});
+
 			describe('balena.models.application.tags', function () {
 				const tagTestOptions = {
 					// prettier-ignore

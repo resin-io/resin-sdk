@@ -166,6 +166,9 @@ const sdk = fromSharedOptions();
             * [.disableDeviceUrls(nameOrSlugOrId)](#balena.models.application.disableDeviceUrls) ⇒ <code>Promise</code>
             * [.grantSupportAccess(nameOrSlugOrId, expiryTimestamp)](#balena.models.application.grantSupportAccess) ⇒ <code>Promise</code>
             * [.revokeSupportAccess(nameOrSlugOrId)](#balena.models.application.revokeSupportAccess) ⇒ <code>Promise</code>
+            * [.setRepositoryUrl(nameOrSlugOrId, repositoryUrl)](#balena.models.application.setRepositoryUrl) ⇒ <code>Promise</code>
+            * [.setIsPublic(nameOrSlugOrId, isPublic)](#balena.models.application.setIsPublic) ⇒ <code>Promise</code>
+            * [.setClass(nameOrSlugOrId, applicationClass)](#balena.models.application.setClass) ⇒ <code>Promise</code>
         * [.device](#balena.models.device) : <code>object</code>
             * [.tags](#balena.models.device.tags) : <code>object</code>
                 * [.getAllByApplication(nameOrSlugOrId, [options])](#balena.models.device.tags.getAllByApplication) ⇒ <code>Promise</code>
@@ -537,6 +540,9 @@ balena.models.device.get(123).catch(function (error) {
         * [.disableDeviceUrls(nameOrSlugOrId)](#balena.models.application.disableDeviceUrls) ⇒ <code>Promise</code>
         * [.grantSupportAccess(nameOrSlugOrId, expiryTimestamp)](#balena.models.application.grantSupportAccess) ⇒ <code>Promise</code>
         * [.revokeSupportAccess(nameOrSlugOrId)](#balena.models.application.revokeSupportAccess) ⇒ <code>Promise</code>
+        * [.setRepositoryUrl(nameOrSlugOrId, repositoryUrl)](#balena.models.application.setRepositoryUrl) ⇒ <code>Promise</code>
+        * [.setIsPublic(nameOrSlugOrId, isPublic)](#balena.models.application.setIsPublic) ⇒ <code>Promise</code>
+        * [.setClass(nameOrSlugOrId, applicationClass)](#balena.models.application.setClass) ⇒ <code>Promise</code>
     * [.device](#balena.models.device) : <code>object</code>
         * [.tags](#balena.models.device.tags) : <code>object</code>
             * [.getAllByApplication(nameOrSlugOrId, [options])](#balena.models.device.tags.getAllByApplication) ⇒ <code>Promise</code>
@@ -781,6 +787,9 @@ balena.models.device.get(123).catch(function (error) {
     * [.disableDeviceUrls(nameOrSlugOrId)](#balena.models.application.disableDeviceUrls) ⇒ <code>Promise</code>
     * [.grantSupportAccess(nameOrSlugOrId, expiryTimestamp)](#balena.models.application.grantSupportAccess) ⇒ <code>Promise</code>
     * [.revokeSupportAccess(nameOrSlugOrId)](#balena.models.application.revokeSupportAccess) ⇒ <code>Promise</code>
+    * [.setRepositoryUrl(nameOrSlugOrId, repositoryUrl)](#balena.models.application.setRepositoryUrl) ⇒ <code>Promise</code>
+    * [.setIsPublic(nameOrSlugOrId, isPublic)](#balena.models.application.setIsPublic) ⇒ <code>Promise</code>
+    * [.setClass(nameOrSlugOrId, applicationClass)](#balena.models.application.setClass) ⇒ <code>Promise</code>
 
 <a name="balena.models.application.tags"></a>
 
@@ -2402,6 +2411,84 @@ balena.models.application.revokeSupportAccess(123);
 **Example**  
 ```js
 balena.models.application.revokeSupportAccess('MyApp', function(error) {
+	if (error) throw error;
+});
+```
+<a name="balena.models.application.setRepositoryUrl"></a>
+
+##### application.setRepositoryUrl(nameOrSlugOrId, repositoryUrl) ⇒ <code>Promise</code>
+**Kind**: static method of [<code>application</code>](#balena.models.application)  
+**Summary**: Set application repository URL  
+**Access**: public  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| nameOrSlugOrId | <code>String</code> \| <code>Number</code> | application name (string) (deprecated), slug (string) or id (number) |
+| repositoryUrl | <code>String</code> | The application repository url |
+
+**Example**  
+```js
+balena.models.application.setRepositoryUrl('MyApp', 'https://github.com/balenalabs/balena-sound');
+```
+**Example**  
+```js
+balena.models.application.setRepositoryUrl(123, 'https://github.com/balenalabs/balena-sound');
+```
+**Example**  
+```js
+balena.models.application.setRepositoryUrl('MyApp', 'https://github.com/balenalabs/balena-sound', function(error) {
+	if (error) throw error;
+});
+```
+<a name="balena.models.application.setIsPublic"></a>
+
+##### application.setIsPublic(nameOrSlugOrId, isPublic) ⇒ <code>Promise</code>
+**Kind**: static method of [<code>application</code>](#balena.models.application)  
+**Summary**: Set an application as public or not public  
+**Access**: public  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| nameOrSlugOrId | <code>String</code> \| <code>Number</code> | application name (string) (deprecated), slug (string) or id (number) |
+| isPublic | <code>Boolean</code> | If true set the application as public |
+
+**Example**  
+```js
+balena.models.application.setIsPublic('MyApp', true);
+```
+**Example**  
+```js
+balena.models.application.setIsPublic(123, true);
+```
+**Example**  
+```js
+balena.models.application.setIsPublic('MyApp', true, function(error) {
+	if (error) throw error;
+});
+```
+<a name="balena.models.application.setClass"></a>
+
+##### application.setClass(nameOrSlugOrId, applicationClass) ⇒ <code>Promise</code>
+**Kind**: static method of [<code>application</code>](#balena.models.application)  
+**Summary**: Set an application class  
+**Access**: public  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| nameOrSlugOrId | <code>String</code> \| <code>Number</code> | application name (string) (deprecated), slug (string) or id (number) |
+| applicationClass | <code>String</code> | Possible values are |
+
+**Example**  
+```js
+balena.models.application.setIsPublic('MyApp', true);
+```
+**Example**  
+```js
+balena.models.application.setIsPublic(123, true);
+```
+**Example**  
+```js
+balena.models.application.setIsPublic('MyApp', true, function(error) {
 	if (error) throw error;
 });
 ```

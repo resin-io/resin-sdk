@@ -51,6 +51,7 @@ import {
 	getCurrentServiceDetailsPineExpand,
 	generateCurrentServiceDetails,
 } from '../util/device-service-details';
+import { ApplicationClassType } from '../types/models';
 
 const getApplicationModel = function (
 	deps: InjectedDependenciesParam,
@@ -1492,6 +1493,147 @@ const getApplicationModel = function (
 					resource: 'application',
 					id: applicationId,
 					body: { is_accessible_by_support_until__date: null },
+				});
+			} catch (err) {
+				if (isNotFoundResponse(err)) {
+					treatAsMissingApplication(nameOrSlugOrId, err);
+				}
+				throw err;
+			}
+		},
+
+		/**
+		 * @summary Set application repository URL
+		 * @name setRepositoryUrl
+		 * @public
+		 * @function
+		 * @memberof balena.models.application
+		 *
+		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String} repositoryUrl - The application repository url
+		 * @returns {Promise}
+		 *
+		 * @example
+		 * balena.models.application.setRepositoryUrl('MyApp', 'https://github.com/balenalabs/balena-sound');
+		 *
+		 * @example
+		 * balena.models.application.setRepositoryUrl(123, 'https://github.com/balenalabs/balena-sound');
+		 *
+		 * @example
+		 * balena.models.application.setRepositoryUrl('MyApp', 'https://github.com/balenalabs/balena-sound', function(error) {
+		 * 	if (error) throw error;
+		 * });
+		 */
+		setRepositoryUrl: async (
+			nameOrSlugOrId: string | number,
+			repositoryUrl: string,
+		): Promise<void> => {
+			if (!repositoryUrl) {
+				throw new errors.BalenaInvalidParameterError(
+					'repositoryUrl',
+					repositoryUrl,
+				);
+			}
+
+			try {
+				const applicationId = await getId(nameOrSlugOrId);
+				await pine.patch({
+					resource: 'application',
+					id: applicationId,
+					body: { is_stored_at__repository_url: repositoryUrl },
+				});
+			} catch (err) {
+				if (isNotFoundResponse(err)) {
+					treatAsMissingApplication(nameOrSlugOrId, err);
+				}
+				throw err;
+			}
+		},
+
+		/**
+		 * @summary Set an application as public or not public
+		 * @name setIsPublic
+		 * @public
+		 * @function
+		 * @memberof balena.models.application
+		 *
+		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {Boolean} isPublic - If true set the application as public
+		 * @returns {Promise}
+		 *
+		 * @example
+		 * balena.models.application.setIsPublic('MyApp', true);
+		 *
+		 * @example
+		 * balena.models.application.setIsPublic(123, true);
+		 *
+		 * @example
+		 * balena.models.application.setIsPublic('MyApp', true, function(error) {
+		 * 	if (error) throw error;
+		 * });
+		 */
+		setIsPublic: async (
+			nameOrSlugOrId: string | number,
+			isPublic: boolean,
+		): Promise<void> => {
+			if (isPublic == null) {
+				throw new errors.BalenaInvalidParameterError('isPublic', isPublic);
+			}
+
+			try {
+				const applicationId = await getId(nameOrSlugOrId);
+				await pine.patch({
+					resource: 'application',
+					id: applicationId,
+					body: { is_public: isPublic },
+				});
+			} catch (err) {
+				if (isNotFoundResponse(err)) {
+					treatAsMissingApplication(nameOrSlugOrId, err);
+				}
+				throw err;
+			}
+		},
+
+		/**
+		 * @summary Set an application class
+		 * @name setClass
+		 * @public
+		 * @function
+		 * @memberof balena.models.application
+		 *
+		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String} applicationClass - Possible values are
+		 * @returns {Promise}
+		 *
+		 * @example
+		 * balena.models.application.setIsPublic('MyApp', true);
+		 *
+		 * @example
+		 * balena.models.application.setIsPublic(123, true);
+		 *
+		 * @example
+		 * balena.models.application.setIsPublic('MyApp', true, function(error) {
+		 * 	if (error) throw error;
+		 * });
+		 */
+		setClass: async (
+			nameOrSlugOrId: string | number,
+			applicationClass: ApplicationClassType,
+		): Promise<void> => {
+			if (applicationClass == null) {
+				throw new errors.BalenaInvalidParameterError(
+					'applicationClass',
+					applicationClass,
+				);
+			}
+
+			try {
+				const applicationId = await getId(nameOrSlugOrId);
+				await pine.patch({
+					resource: 'application',
+					id: applicationId,
+					body: { is_of__class: applicationClass },
 				});
 			} catch (err) {
 				if (isNotFoundResponse(err)) {
