@@ -1,31 +1,16 @@
 - commits:
-    - subject: 'typings: Add the organization_memebership.effective_seat_role field'
-      hash: 8ec09b2401a890106695915516da119ec575d200
+    - subject: Update to pass in provisioning key name for get config.
+      hash: aaac2e12febe2090457da2f374f09028ea58ed7c
       body: ''
       footer:
-        Change-type: minor
+        Change-Type: minor
         change-type: minor
-        Signed-off-by: Thodoris Greasidis <thodoris@balena.io>
-        signed-off-by: Thodoris Greasidis <thodoris@balena.io>
-      author: Thodoris Greasidis
+        Signed-off-by: Nitish Agarwal 1592163+nitishagar@users.noreply.github.com
+        signed-off-by: Nitish Agarwal 1592163+nitishagar@users.noreply.github.com
+      author: Nitish Agarwal
       nested: []
   version: 15.43.0
-  date: 2021-07-14T21:01:51.691Z
-- commits:
-    - subject: 'tests: Reduce the number of organizations created'
-      hash: 59708dbcee7a3b3882751eb88efa30f1232b0631
-      body: ''
-      footer:
-        Change-type: patch
-        change-type: patch
-        See: 'https://github.com/balena-io/balena-api/pull/3239'
-        see: 'https://github.com/balena-io/balena-api/pull/3239'
-        Signed-off-by: Thodoris Greasidis <thodoris@balena.io>
-        signed-off-by: Thodoris Greasidis <thodoris@balena.io>
-      author: Thodoris Greasidis
-      nested: []
-  version: 15.42.2
-  date: 2021-07-14T08:44:06.109Z
+  date: 2021-07-15T10:48:14.930Z
 - commits:
     - subject: 'tests/api-key: Fix a race condition in the apiKey.create() tests'
       hash: d55c3633644cdceac98078abb210bd1f6e8bc61e
