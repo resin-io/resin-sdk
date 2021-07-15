@@ -9,6 +9,7 @@ import type {
 } from '../types/models';
 import { Dictionary } from '../../typings/utils';
 import { getAuthDependentMemoize } from '../util/cache';
+import { maxSatisfying } from 'semver';
 
 const RELEASE_POLICY_TAG_NAME = 'release-policy';
 const ESR_NEXT_TAG_NAME = 'esr-next';
@@ -161,6 +162,12 @@ const getHostappModel = function (deps: InjectedDependenciesParam) {
 		return res;
 	};
 
+	const mapVersions = (versions: OsVersion[], type: OsTypes) => {
+		return versions
+			.filter((version) => version.osType === type)
+			.map((v) => v.strippedVersion);
+	};
+
 	// This mutates the passed object.
 	const transformVersionSets = (
 		osVersionsByDeviceType: OsVersionsByDeviceType,
@@ -261,9 +268,49 @@ const getHostappModel = function (deps: InjectedDependenciesParam) {
 		return memoizedGetTransformedOsVersions(sortedDeviceTypes);
 	};
 
+	/**
+	 * @summary Get latest OS versions for the passed device types
+	 * @name getLatestOsVersions
+	 * @public
+	 * @function
+	 * @memberof balena.models.hostapp
+	 *
+	 * @param {String[]} deviceTypes - device type slugs
+	 * @returns {Promise}
+	 *
+	 * @example
+	 * balena.models.hostapp.getLatestOsVersions(['fincm3', 'raspberrypi3']);
+	 */
+	const getLatestOsVersions = async (
+		deviceTypes: string[],
+	): Promise<OsVersionsByDeviceType> => {
+		const allOsVersions = await getAllOsVersions(deviceTypes);
+		return Object.entries(allOsVersions).reduce(
+			(osVersionsByDeviceType: OsVersionsByDeviceType, [key, versions]) => {
+				const latestOSVersion = maxSatisfying(
+					mapVersions(versions, OsTypes.DEFAULT),
+					'>0.0.0',
+				);
+				const latestESRVersion = maxSatisfying(
+					mapVersions(versions, OsTypes.ESR),
+					'>0.0.0',
+				);
+				const filteredVersions = versions.filter(
+					(v) =>
+						v.strippedVersion === latestOSVersion ||
+						v.strippedVersion === latestESRVersion,
+				)!;
+				osVersionsByDeviceType[key] = filteredVersions;
+				return osVersionsByDeviceType;
+			},
+			{},
+		);
+	};
+
 	return {
 		OsTypes,
 		getAllOsVersions,
+		getLatestOsVersions,
 	};
 };
 

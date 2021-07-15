@@ -75,4 +75,22 @@ describe('Hostapp model', function () {
 			expect(firstRes).to.equal(secondRes);
 		});
 	});
+
+	parallel('balena.models.hostapp.getLatestOsVersions()', function () {
+		it('should contain latest balenaOS and balenaOS ESR OS types', async () => {
+			const res = await balena.models.hostapp.getLatestOsVersions([
+				'fincm3',
+				'raspberrypi3',
+			]);
+
+			['fincm3', 'raspberrypi3'].forEach((key) => {
+				expect(res[key]).to.be.an('Array');
+				expect(res[key]).to.have.lengthOf(4);
+				expect(res[key].filter((r) => r.osType === 'esr')).to.have.lengthOf(2);
+				expect(res[key].filter((r) => r.osType === 'default')).to.have.lengthOf(
+					2,
+				);
+			});
+		});
+	});
 });
