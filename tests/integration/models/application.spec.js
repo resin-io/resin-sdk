@@ -623,13 +623,13 @@ describe('Application Model', function () {
 
 			describe('balena.models.application.generateApiKey()', function () {
 				applicationRetrievalFields.forEach((prop) =>
-					it(`should be able to generate an API key by ${prop}`, function () {
-						return balena.models.application
-							.generateApiKey(this.application[prop])
-							.then(function (apiKey) {
-								expect(_.isString(apiKey)).to.be.true;
-								return expect(apiKey).to.have.length(32);
-							});
+					it(`should be able to generate an API key by ${prop}`, async function () {
+						const apiKey = await balena.models.application.generateApiKey(
+							this.application[prop],
+						);
+
+						expect(apiKey).to.be.a('string');
+						expect(apiKey).to.have.length(32);
 					}),
 				);
 
@@ -658,6 +658,18 @@ describe('Application Model', function () {
 								expect(_.isString(key)).to.be.true;
 								return expect(key).to.have.length(32);
 							});
+					}),
+				);
+
+				applicationRetrievalFields.forEach((prop) =>
+					it(`should be able to generate a provisioning key by ${prop} with key name as key_${prop}`, async function () {
+						const key = await balena.models.application.generateProvisioningKey(
+							this.application[prop],
+							`key_${prop}`,
+						);
+
+						expect(key).to.be.a('string');
+						expect(key).to.have.length(32);
 					}),
 				);
 
