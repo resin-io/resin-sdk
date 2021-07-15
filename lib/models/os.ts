@@ -30,6 +30,7 @@ const BALENAOS_VERSION_REGEX = /v?\d+\.\d+\.\d+(\.rev\d+)?((\-|\+).+)?/;
 export interface ImgConfigOptions {
 	network?: 'ethernet' | 'wifi';
 	appUpdatePollInterval?: number;
+	provisioningKeyName?: string;
 	wifiKey?: string;
 	wifiSsid?: string;
 	ip?: string;
@@ -471,6 +472,7 @@ const getOsModel = function (
 	 * the device will use, one of 'ethernet' or 'wifi'.
 	 * @param {Number} [options.appUpdatePollInterval] - How often the OS checks
 	 * for updates, in minutes.
+	 * @param {String} [options.provisioningKeyName] - Name assigned to API key
 	 * @param {String} [options.wifiKey] - The key for the wifi network the
 	 * device will connect to.
 	 * @param {String} [options.wifiSsid] - The ssid for the wifi network the
