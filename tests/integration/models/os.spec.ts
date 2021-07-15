@@ -451,6 +451,49 @@ describe('OS model', function () {
 				const promise = balena.models.os.download('foo-bar-baz');
 				return expect(promise).to.be.rejectedWith('No such device type');
 			}));
+
+		describe('given well formed and malformed balenaOS versions', () => {
+			it('should reject malformed versions with an error', async () => {
+				const versions = [
+					'2.60.1+foo',
+					'2.60.1-foo',
+					'2.60.1.foo',
+					'2.60.1+rev',
+					'2.60.1+rev1+foo',
+					'2.60.1+rev1-foo',
+					'2.60.1+rev1.foo',
+					'2.60.1+rev1.dev.foo',
+					'2.60.1+rev1.prod.foo',
+				];
+				for (const version of [...versions]) {
+					versions.push(`v${version}`);
+				}
+				for (const version of versions) {
+					await expect(
+						balena.models.os.download('raspberry-pi', version),
+					).to.be.rejectedWith(`Invalid balenaOS version format: ${version}`);
+				}
+			});
+
+			it('should accept well formed versions', async () => {
+				const versions = [
+					'0.0.1',
+					'0.0.1.dev',
+					'0.0.1.prod',
+					'0.0.1+rev1',
+					'0.0.1+rev1.dev',
+					'0.0.1+rev1.prod',
+				];
+				for (const version of [...versions]) {
+					versions.push(`v${version}`);
+				}
+				for (const version of versions) {
+					await expect(
+						balena.models.os.download('raspberry-pi', version),
+					).to.be.rejectedWith(`No such version for the device type`);
+				}
+			});
+		});
 	});
 
 	describe('balena.models.os.isSupportedOsUpdate()', function () {

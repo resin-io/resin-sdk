@@ -25,7 +25,7 @@ import type * as DeviceTypeJson from '../types/device-type-json';
 import type { InjectedDependenciesParam, InjectedOptionsParam } from '..';
 import { getAuthDependentMemoize } from '../util/cache';
 
-const BALENAOS_VERSION_REGEX = /v?\d+\.\d+\.\d+(\.rev\d+)?((\-|\+).+)?/;
+const BALENAOS_VERSION_REGEX = /^\d+\.\d+\.\d+(\+rev\d+)?(\.(dev|prod))?$/;
 
 export interface ImgConfigOptions {
 	network?: 'ethernet' | 'wifi';
@@ -180,7 +180,7 @@ const getOsModel = function (
 		}
 		const vNormalized = v[0] === 'v' ? v.substring(1) : v;
 		if (!BALENAOS_VERSION_REGEX.test(vNormalized)) {
-			throw new Error(`Invalid semver version: ${v}`);
+			throw new Error(`Invalid balenaOS version format: ${v}`);
 		}
 		return vNormalized;
 	};
