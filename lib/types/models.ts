@@ -316,6 +316,12 @@ export interface Release {
 	update_timestamp: string | null;
 	end_timestamp: string;
 	release_version: string | null;
+	semver: string;
+	semver_major: number;
+	semver_minor: number;
+	semver_patch: number;
+	revision: number | null;
+	is_final: boolean;
 
 	is_created_by__user: OptionalNavigationResource<User>;
 	belongs_to__application: NavigationResource<Application>;
