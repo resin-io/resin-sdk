@@ -14,6 +14,9 @@ matrix:
 
 # what combinations to test
 environment:
+  TEST_API_URL: https://api.balena-staging.com
+  TEST_PAID_EMAIL: ''
+  TEST_PAID_PASSWORD: ''
   matrix:
   - nodejs_version: 10
     TEST_EMAIL: ci_test_user+testsdk1@resin.io

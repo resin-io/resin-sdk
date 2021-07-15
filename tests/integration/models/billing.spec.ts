@@ -14,7 +14,7 @@ import { timeSuite } from '../../util';
 import type * as BalenaSdk from '../../..';
 const { expect } = m.chai;
 
-describe('Billing Model', function () {
+describe.skip('Billing Model', function () {
 	timeSuite(before);
 	describe('Free Account', function () {
 		givenLoggedInUser(before);
