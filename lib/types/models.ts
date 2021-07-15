@@ -1,16 +1,12 @@
 import type { DeviceOverallStatus } from './device-overall-status';
 export type { DeviceOverallStatus } from './device-overall-status';
 import { Contract } from './contract';
-import { JWTUser } from './jwt';
 import type {
 	PineDeferred,
 	NavigationResource,
 	OptionalNavigationResource,
 	ReverseNavigationResource,
 } from '../../typings/pinejs-client-core';
-
-// TODO: Drop in the next major
-export { SocialServiceAccount } from './jwt';
 
 export interface ResourceTypeMap {
 	api_key: ApiKey;
@@ -36,8 +32,6 @@ export interface ResourceTypeMap {
 	invitee: Invitee;
 	invitee__is_invited_to__application: ApplicationInvite;
 	invitee__is_invited_to__organization: OrganizationInvite;
-	/** @deprecated */
-	my_application: Application;
 	organization: Organization;
 	organization__has_private_access_to__device_type: OrganizationPrivateDeviceTypeAccess;
 	organization_membership: OrganizationMembership;
@@ -68,8 +62,6 @@ export interface ResourceTypeMap {
 	user: User;
 	user__has__public_key: SSHKey;
 	user__has_direct_access_to__application: UserHasDirectAccessToApplication;
-	/** @deprecated in favor of user_application_membership */
-	user__is_member_of__application: ApplicationMembership;
 	user_application_membership: ApplicationMembership;
 }
 
@@ -107,16 +99,13 @@ export interface RecoveryTwoFactor {
 	belongs_to__user: NavigationResource<User>;
 }
 
-// TODO: Stop (confusingly) extending the UserJWT in the next major version
-export interface User extends JWTUser {
+export interface User {
 	id: number;
 	actor: number;
 	created_at: string;
 	username: string;
 
 	organization_membership: ReverseNavigationResource<OrganizationMembership>;
-	/** @deprecated in favor of user_application_membership */
-	user__is_member_of__application: ReverseNavigationResource<ApplicationMembership>;
 	user_application_membership: ReverseNavigationResource<ApplicationMembership>;
 	team_membership: ReverseNavigationResource<TeamMembership>;
 	has_direct_access_to__application: ReverseNavigationResource<Application>;
@@ -191,11 +180,7 @@ export interface Application {
 	owns__release: ReverseNavigationResource<Release>;
 	is_depended_on_by__application: ReverseNavigationResource<Application>;
 	is_directly_accessible_by__user: ReverseNavigationResource<User>;
-	/** includes__user */
-	/** @deprecated in favor of user_application_membership */
-	user__is_member_of__application: ReverseNavigationResource<ApplicationMembership>;
 	user_application_membership: ReverseNavigationResource<ApplicationMembership>;
-	/** is_accessible_by__team */
 	team_application_access: ReverseNavigationResource<TeamApplicationAccess>;
 }
 
@@ -343,8 +328,6 @@ export interface Device {
 	mac_address: string | null;
 	is_accessible_by_support_until__date: string | null;
 	is_connected_to_vpn: boolean;
-	/** @deprecate */
-	is_in_local_mode?: boolean;
 	is_locked_until__date: string;
 	is_web_accessible: boolean;
 	is_active: boolean;
@@ -396,8 +379,8 @@ export interface Device {
 	device_tag: ReverseNavigationResource<DeviceTag>;
 	manages__device: ReverseNavigationResource<Device>;
 	service_install: ReverseNavigationResource<ServiceInstall>;
-	image_install?: ReverseNavigationResource<ImageInstall>;
-	gateway_download?: ReverseNavigationResource<GatewayDownload>;
+	image_install: ReverseNavigationResource<ImageInstall>;
+	gateway_download: ReverseNavigationResource<GatewayDownload>;
 }
 
 export interface CpuArchitecture {
@@ -443,9 +426,6 @@ export interface OrganizationPrivateDeviceTypeAccess {
 	organization: NavigationResource<Organization>;
 	has_private_access_to__device_type: NavigationResource<DeviceType>;
 }
-
-export type DeviceWithImageInstalls = Device &
-	Required<Pick<Device, 'image_install' | 'gateway_download'>>;
 
 export interface SupervisorRelease {
 	created_at: string;
@@ -673,8 +653,6 @@ export interface Subscription {
 	is_for__organization: NavigationResource<Organization>;
 	is_for__plan: NavigationResource<Plan>;
 	subscription_addon_discount: ReverseNavigationResource<SubscriptionAddonDiscount>;
-	/** @deprecated */
-	discounts__plan_addon: ReverseNavigationResource<SubscriptionAddonDiscount>;
 	subscription_prepaid_addon: ReverseNavigationResource<SubscriptionPrepaidAddon>;
 }
 

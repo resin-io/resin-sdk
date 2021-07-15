@@ -83,7 +83,7 @@ describe('Balena SDK', function () {
 			const interceptor = m.sinon.mock().returnsArg(0);
 			balena.interceptors = [{ request: ignoreWhoamiCalls(interceptor) }];
 			return balena.models.application
-				.getAll()
+				.getAll({ $top: 1 })
 				.then(() =>
 					expect(interceptor.called).to.equal(
 						true,
@@ -97,7 +97,7 @@ describe('Balena SDK', function () {
 				const requestInterceptor = m.sinon.mock().returnsArg(0);
 				balena.interceptors.push({ request: requestInterceptor });
 
-				const promise = balena.models.application.getAll();
+				const promise = balena.models.application.getAll({ $top: 1 });
 
 				return promise.then(() =>
 					expect(requestInterceptor.called).to.equal(
@@ -117,7 +117,7 @@ describe('Balena SDK', function () {
 				balena.interceptors.push({ request: requestInterceptor });
 				balena.interceptors.push({ requestError: requestErrorInterceptor });
 
-				const promise = balena.models.application.getAll();
+				const promise = balena.models.application.getAll({ $top: 1 });
 
 				return expect(promise)
 					.to.be.rejectedWith('replacement error')
@@ -133,7 +133,7 @@ describe('Balena SDK', function () {
 			it('should be able to intercept responses', function () {
 				const responseInterceptor = m.sinon.mock().returnsArg(0);
 				balena.interceptors.push({ response: responseInterceptor });
-				const promise = balena.models.application.getAll();
+				const promise = balena.models.application.getAll({ $top: 1 });
 
 				return promise.then(() =>
 					expect(responseInterceptor.called).to.equal(
@@ -198,7 +198,7 @@ describe('Balena SDK', function () {
 					const responseInterceptor = getVersionHeaderResponseInterceptor();
 					balena.interceptors.push({ response: responseInterceptor });
 
-					const promise = balena.models.application.getAll();
+					const promise = balena.models.application.getAll({ $top: 1 });
 
 					return promise.then(() =>
 						expect(responseInterceptor.callCount).to.equal(
@@ -365,7 +365,7 @@ describe('Balena SDK', function () {
 					apiKey: this.testApiKey,
 				});
 				const testSdk = getSdk(testSdkOpts);
-				const promise = testSdk.models.apiKey.getAll();
+				const promise = testSdk.models.apiKey.getAll({ $top: 1 });
 				return expect(promise).to.be.rejected.and.eventually.have.property(
 					'code',
 					'BalenaNotLoggedIn',

@@ -89,7 +89,7 @@ const getApiKeysModel = function (
 		},
 
 		/**
-		 * @summary Get all API keys
+		 * @summary Get all accessible API keys
 		 * @name getAll
 		 * @public
 		 * @function
@@ -110,21 +110,13 @@ const getApiKeysModel = function (
 		 * 	console.log(apiKeys);
 		 * });
 		 */
-		getAll(
+		async getAll(
 			options: BalenaSdk.PineOptions<BalenaSdk.ApiKey> = {},
 		): Promise<BalenaSdk.ApiKey[]> {
-			return pine.get({
+			return await pine.get({
 				resource: 'api_key',
 				options: mergePineOptions(
 					{
-						// the only way to reason whether
-						// it's a named user api key is whether
-						// it has a name
-						$filter: {
-							name: {
-								$ne: null,
-							},
-						},
 						$orderby: 'name asc',
 					},
 					options,
@@ -157,9 +149,8 @@ const getApiKeysModel = function (
 		async getAllNamedUserApiKeys(
 			options: BalenaSdk.PineOptions<BalenaSdk.ApiKey> = {},
 		): Promise<BalenaSdk.ApiKey[]> {
-			return await pine.get({
-				resource: 'api_key',
-				options: mergePineOptions(
+			return await exports.getAll(
+				mergePineOptions(
 					{
 						$filter: {
 							is_of__actor: await sdkInstance.auth.getUserActorId(),
@@ -170,11 +161,10 @@ const getApiKeysModel = function (
 								$ne: null,
 							},
 						},
-						$orderby: 'name asc',
 					},
 					options,
 				),
-			});
+			);
 		},
 
 		/**
@@ -184,7 +174,7 @@ const getApiKeysModel = function (
 		 * @function
 		 * @memberof balena.models.apiKey
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String|Number} slugOrId - application slug (string) or id (number)
 		 * @param {Object} [options={}] - extra pine options to use
 		 * @fulfil {Object[]} - apiKeys
 		 * @returns {Promise}
@@ -201,16 +191,15 @@ const getApiKeysModel = function (
 		 * });
 		 */
 		async getProvisioningApiKeysByApplication(
-			nameOrSlugOrId: string | number,
+			slugOrId: string | number,
 			options: BalenaSdk.PineOptions<BalenaSdk.ApiKey> = {},
 		): Promise<BalenaSdk.ApiKey[]> {
-			const { actor } = await applicationModel().get(nameOrSlugOrId, {
+			const { actor } = await applicationModel().get(slugOrId, {
 				$select: 'actor',
 			});
 
-			return await pine.get({
-				resource: 'api_key',
-				options: mergePineOptions(
+			return await exports.getAll(
+				mergePineOptions(
 					{
 						$filter: {
 							is_of__actor: actor,
@@ -219,7 +208,7 @@ const getApiKeysModel = function (
 					},
 					options,
 				),
-			});
+			);
 		},
 
 		/**
@@ -269,16 +258,6 @@ const getApiKeysModel = function (
 				resource: 'api_key',
 				id,
 				body,
-				options: {
-					// the only way to reason whether
-					// it's a named user api key is whether
-					// it has a name
-					$filter: {
-						name: {
-							$ne: null,
-						},
-					},
-				},
 			});
 		},
 
@@ -304,15 +283,6 @@ const getApiKeysModel = function (
 			await pine.delete({
 				resource: 'api_key',
 				id,
-				options: {
-					// so that we don't accidentally delete
-					// a non named user api key
-					$filter: {
-						name: {
-							$ne: null,
-						},
-					},
-				},
 			});
 		},
 	};

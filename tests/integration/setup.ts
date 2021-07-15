@@ -346,7 +346,7 @@ export function givenADevice(
 	beforeFn(async function () {
 		const uuid = balena.models.device.generateUniqueKey();
 		const deviceInfo = await balena.models.device.register(
-			this.application.app_name,
+			this.application.slug,
 			uuid,
 		);
 
@@ -619,9 +619,5 @@ export function givenASupervisorRelease(
 	});
 }
 
-export const applicationRetrievalFields = toWritable([
-	'id',
-	'app_name',
-	'slug',
-] as const);
+export const applicationRetrievalFields = toWritable(['id', 'slug'] as const);
 export const deviceUniqueFields = toWritable(['id', 'uuid'] as const);

@@ -42,7 +42,7 @@ export interface ApplicationMembershipCreationOptions {
 const getApplicationMembershipModel = function (
 	deps: InjectedDependenciesParam,
 	getApplication: (
-		nameOrSlugOrId: string | number,
+		slugOrId: string | number,
 		options?: PineOptions<Application>,
 	) => Promise<Application>,
 ) {
@@ -161,13 +161,13 @@ const getApplicationMembershipModel = function (
 		 * @description
 		 * This method returns all application memberships for a specific application.
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String|Number} slugOrId - application slug (string) or id (number)
 		 * @param {Object} [options={}] - extra pine options to use
 		 * @fulfil {Object[]} - application memberships
 		 * @returns {Promise}
 		 *
 		 * @example
-		 * balena.models.application.membership.getAllByApplication('MyApp').then(function(memberships) {
+		 * balena.models.application.membership.getAllByApplication('myorganization/myapp').then(function(memberships) {
 		 * 	console.log(memberships);
 		 * });
 		 *
@@ -182,10 +182,10 @@ const getApplicationMembershipModel = function (
 		 * });
 		 */
 		async getAllByApplication(
-			nameOrSlugOrId: number | string,
+			slugOrId: number | string,
 			options: PineOptions<ApplicationMembership> = {},
 		): Promise<ApplicationMembership[]> {
-			const { id } = await getApplication(nameOrSlugOrId, {
+			const { id } = await getApplication(slugOrId, {
 				$select: 'id',
 			});
 			return await exports.getAll(

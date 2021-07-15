@@ -51,10 +51,6 @@ export type {
 	TypedResult as PineTypedResult,
 } from '../typings/pinejs-client-core';
 
-// TODO: Drop in the next major
-/** @deprecated */
-export type PineWithSelectOnGet = PineStrict;
-
 export type { ApplicationMembershipCreationOptions } from './models/application-membership';
 export type { ApplicationInviteOptions } from './models/application-invite';
 export type {

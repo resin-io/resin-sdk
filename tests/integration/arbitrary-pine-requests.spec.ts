@@ -14,22 +14,10 @@ describe('arbitrary pine requests', function () {
 			$expand: {
 				organization: {},
 				// includes__user: {},
-				user__is_member_of__application: {},
+				// user__is_member_of__application: {},
 				user_application_membership: {},
 				// is_accessible_by__team: {},
 				team_application_access: {},
-			},
-		},
-	});
-
-	describeExpandAssertions<BalenaSdk.ApplicationMembership>({
-		resource: 'user__is_member_of__application',
-		options: {
-			$expand: {
-				user: {},
-				// application: {},
-				is_member_of__application: {},
-				application_membership_role: {},
 			},
 		},
 	});
@@ -53,8 +41,7 @@ describe('arbitrary pine requests', function () {
 				// includes__organization_membership: {},
 				organization_membership: {},
 				// is_member_of__application: {},
-				// user_application_membership: {},
-				user__is_member_of__application: {},
+				// user__is_member_of__application: {},
 				user_application_membership: {},
 				// is_member_of__team: {},
 				team_membership: {},

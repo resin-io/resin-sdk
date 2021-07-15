@@ -246,13 +246,13 @@ const getReleaseModel = function (
 	 * @function
 	 * @memberof balena.models.release
 	 *
-	 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+	 * @param {String|Number} slugOrId - application slug (string) or id (number)
 	 * @param {Object} [options={}] - extra pine options to use
 	 * @fulfil {Object[]} - releases
 	 * @returns {Promise}
 	 *
 	 * @example
-	 * balena.models.release.getAllByApplication('MyApp').then(function(releases) {
+	 * balena.models.release.getAllByApplication('myorganization/myapp').then(function(releases) {
 	 * 	console.log(releases);
 	 * });
 	 *
@@ -262,16 +262,16 @@ const getReleaseModel = function (
 	 * });
 	 *
 	 * @example
-	 * balena.models.release.getAllByApplication('MyApp', function(error, releases) {
+	 * balena.models.release.getAllByApplication('myorganization/myapp', function(error, releases) {
 	 * 	if (error) throw error;
 	 * 	console.log(releases);
 	 * });
 	 */
 	async function getAllByApplication(
-		nameOrSlugOrId: string | number,
+		slugOrId: string | number,
 		options: BalenaSdk.PineOptions<BalenaSdk.Release> = {},
 	): Promise<BalenaSdk.Release[]> {
-		const { id } = await applicationModel().get(nameOrSlugOrId, {
+		const { id } = await applicationModel().get(slugOrId, {
 			$select: 'id',
 		});
 		return await pine.get({
@@ -295,13 +295,13 @@ const getReleaseModel = function (
 	 * @function
 	 * @memberof balena.models.release
 	 *
-	 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+	 * @param {String|Number} slugOrId - application slug (string) or id (number)
 	 * @param {Object} [options={}] - extra pine options to use
 	 * @fulfil {Object|undefined} - release
 	 * @returns {Promise}
 	 *
 	 * @example
-	 * balena.models.release.getLatestByApplication('MyApp').then(function(releases) {
+	 * balena.models.release.getLatestByApplication('myorganization/myapp').then(function(releases) {
 	 * 	console.log(releases);
 	 * });
 	 *
@@ -311,17 +311,17 @@ const getReleaseModel = function (
 	 * });
 	 *
 	 * @example
-	 * balena.models.release.getLatestByApplication('MyApp', function(error, releases) {
+	 * balena.models.release.getLatestByApplication('myorganization/myapp', function(error, releases) {
 	 * 	if (error) throw error;
 	 * 	console.log(releases);
 	 * });
 	 */
 	async function getLatestByApplication(
-		nameOrSlugOrId: string | number,
+		slugOrId: string | number,
 		options: BalenaSdk.PineOptions<BalenaSdk.Release> = {},
 	): Promise<BalenaSdk.Release | undefined> {
 		const [release] = await getAllByApplication(
-			nameOrSlugOrId,
+			slugOrId,
 			mergePineOptions(
 				{
 					$top: 1,
@@ -342,7 +342,7 @@ const getReleaseModel = function (
 	 * @function
 	 * @memberof balena.models.release
 	 *
-	 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+	 * @param {String|Number} slugOrId - application slug (string) or id (number)
 	 * @param {Object} urlDeployOptions - builder options
 	 * @param {String} urlDeployOptions.url - a url with a tarball of the project to build
 	 * @param {Boolean} [urlDeployOptions.shouldFlatten=true] - Should be true when the tarball includes an extra root folder with all the content
@@ -350,7 +350,7 @@ const getReleaseModel = function (
 	 * @returns {Promise}
 	 *
 	 * @example
-	 * balena.models.release.createFromUrl('MyApp', { url: 'https://github.com/balena-io-projects/simple-server-node/archive/v1.0.0.tar.gz' }).then(function(releaseId) {
+	 * balena.models.release.createFromUrl('myorganization/myapp', { url: 'https://github.com/balena-io-projects/simple-server-node/archive/v1.0.0.tar.gz' }).then(function(releaseId) {
 	 * 	console.log(releaseId);
 	 * });
 	 *
@@ -360,13 +360,13 @@ const getReleaseModel = function (
 	 * });
 	 *
 	 * @example
-	 * balena.models.release.createFromUrl('MyApp', { url: 'https://github.com/balena-io-projects/simple-server-node/archive/v1.0.0.tar.gz' }, function(error, releaseId) {
+	 * balena.models.release.createFromUrl('myorganization/myapp', { url: 'https://github.com/balena-io-projects/simple-server-node/archive/v1.0.0.tar.gz' }, function(error, releaseId) {
 	 * 	if (error) throw error;
 	 * 	console.log(releaseId);
 	 * });
 	 */
 	async function createFromUrl(
-		nameOrSlugOrId: string | number,
+		slugOrId: string | number,
 		urlDeployOptions: BuilderUrlDeployOptions,
 	): Promise<number> {
 		const appOptions = {
@@ -379,7 +379,7 @@ const getReleaseModel = function (
 		} as const;
 
 		const { app_name, organization } = (await applicationModel().get(
-			nameOrSlugOrId,
+			slugOrId,
 			appOptions,
 		)) as PineTypedResult<Application, typeof appOptions>;
 		return await builderHelper().buildFromUrl(
@@ -401,13 +401,13 @@ const getReleaseModel = function (
 		 * @function
 		 * @memberof balena.models.release.tags
 		 *
-		 * @param {String|Number} nameOrSlugOrId - application name (string) (deprecated), slug (string) or id (number)
+		 * @param {String|Number} slugOrId - application slug (string) or id (number)
 		 * @param {Object} [options={}] - extra pine options to use
 		 * @fulfil {Object[]} - release tags
 		 * @returns {Promise}
 		 *
 		 * @example
-		 * balena.models.release.tags.getAllByApplication('MyApp').then(function(tags) {
+		 * balena.models.release.tags.getAllByApplication('myorganization/myapp').then(function(tags) {
 		 * 	console.log(tags);
 		 * });
 		 *
@@ -417,16 +417,16 @@ const getReleaseModel = function (
 		 * });
 		 *
 		 * @example
-		 * balena.models.release.tags.getAllByApplication('MyApp', function(error, tags) {
+		 * balena.models.release.tags.getAllByApplication('myorganization/myapp', function(error, tags) {
 		 * 	if (error) throw error;
 		 * 	console.log(tags)
 		 * });
 		 */
 		async getAllByApplication(
-			nameOrSlugOrId: string | number,
+			slugOrId: string | number,
 			options: BalenaSdk.PineOptions<BalenaSdk.ReleaseTag> = {},
 		): Promise<BalenaSdk.ReleaseTag[]> {
-			const { id } = await applicationModel().get(nameOrSlugOrId, {
+			const { id } = await applicationModel().get(slugOrId, {
 				$select: 'id',
 			});
 			return await tagsModel.getAll(

@@ -39,7 +39,7 @@
     "test:browser": "karma start",
     "test:dev": "tsc --noEmit --project ./tsconfig.dev.json",
     "test:ts-js": "tsc --noEmit --project ./tsconfig.js.json",
-    "test:ts-compatibility": "npx typescript@~3.9.3 --noEmit --project ./tsconfig.dist.json",
+    "test:ts-compatibility": "npx typescript@~4.3.2 --noEmit --project ./tsconfig.dist.json",
     "test:typings": "tsc --project ./typing_tests/tsconfig.json",
     "build-es2015:fast": "rimraf es2015 && tsc --target es2015 --outDir es2015 && gulp inject-version --buildDir es2015",
     "build-es2015": "npm run build-es2015:fast && gulp pack-browser --buildDir es2015",
@@ -56,7 +56,7 @@
   "author": "Juan Cruz Viotti <juan@balena.io>",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=10.0"
+    "node": ">=12.0"
   },
   "devDependencies": {
     "@balena/lint": "^6.1.1",

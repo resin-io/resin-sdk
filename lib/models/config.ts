@@ -80,9 +80,7 @@ const getConfigModel = function (
 				deviceType.name = deviceType.name.replace('(PREVIEW)', '(ALPHA)');
 			}
 			if (deviceType.state === 'EXPERIMENTAL') {
-				// Keep 'BETA' as the state until the next major, just in case someone is using this
-				// TODO: In the next major change it to 'NEW'
-				deviceType.state = 'BETA';
+				deviceType.state = 'NEW';
 				deviceType.name = deviceType.name.replace('(EXPERIMENTAL)', '(NEW)');
 			}
 			return deviceType;
