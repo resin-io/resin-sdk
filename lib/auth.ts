@@ -469,6 +469,7 @@ const getAuth = function (
 	 * 	if (error) throw error;
 	 * 	console.log(token);
 	 * });
+	 *
 	 */
 	async function register(credentials: {
 		email: string;
@@ -482,7 +483,80 @@ const getAuth = function (
 			body: credentials,
 			sendToken: false,
 		});
+
 		return body;
+	}
+
+	/**
+	 * @summary Verifies an email
+	 * @name verifyEmail
+	 * @public
+	 * @function
+	 * @memberof balena.auth
+	 *
+	 * @param {Object} verificationPayload - in the form of email, and token
+	 * @param {String} verificationPayload.email - the email
+	 * @param {String} verificationPayload.token - the verification token
+	 *
+	 * @fulfil {String} - session token
+	 * @returns {Promise}
+	 *
+	 * @example
+	 * balena.auth.verifyEmail({
+	 * 	email: 'johndoe@gmail.com',
+	 * 	token: '5bb11d90eefb34a70318f06a43ef063f'
+	 * }).then(function(jwt) {
+	 * 	console.log(jwt);
+	 * });
+	 *
+	 */
+	async function verifyEmail(verificationPayload: {
+		email: string;
+		token: string;
+	}): Promise<string> {
+		const email = verificationPayload.email;
+		const verificationToken = verificationPayload.token;
+
+		const { body } = await request.send({
+			method: 'POST',
+			url: '/user/v1/verify-email',
+			body: {
+				verificationToken,
+				email,
+			},
+			baseUrl: apiUrl,
+			sendToken: false,
+		});
+
+		return body;
+	}
+
+	/**
+	 * @summary Re-send verification email to the user
+	 * @name requestVerificationEmail
+	 * @public
+	 * @function
+	 * @memberof balena.auth
+	 * @description This will only work if you used {@link balena.auth.login} to log in.
+	 *
+	 * @fulfil {string} - returns with 'OK' status when successful
+	 * @returns {Promise}
+	 *
+	 * @example
+	 * balena.auth.requestVerificationEmail().then(function() {
+	 * 	console.log('Requesting verification email operation complete!');
+	 * })
+	 *
+	 */
+	async function requestVerificationEmail() {
+		const id = await getUserId();
+		return await pine.patch({
+			resource: 'user',
+			id,
+			body: {
+				has_been_sent_verification_email: true,
+			},
+		});
 	}
 
 	return {
@@ -500,6 +574,8 @@ const getAuth = function (
 		getEmail,
 		logout,
 		register,
+		verifyEmail,
+		requestVerificationEmail,
 	};
 };
 
