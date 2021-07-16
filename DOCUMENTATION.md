@@ -363,6 +363,8 @@ const sdk = fromSharedOptions();
         * [.getEmail()](#balena.auth.getEmail) ⇒ <code>Promise</code>
         * [.logout()](#balena.auth.logout) ⇒ <code>Promise</code>
         * [.register(credentials)](#balena.auth.register) ⇒ <code>Promise</code>
+        * [.verifyEmail(verificationPayload)](#balena.auth.verifyEmail) ⇒ <code>Promise</code>
+        * [.requestVerificationEmail()](#balena.auth.requestVerificationEmail) ⇒ <code>Promise</code>
     * [.logs](#balena.logs) : <code>object</code>
         * [.subscribe(uuidOrId, [options])](#balena.logs.subscribe) ⇒ <code>Promise.&lt;LogSubscription&gt;</code>
         * [.history(uuidOrId, [options])](#balena.logs.history) ⇒ <code>Promise</code>
@@ -7271,6 +7273,8 @@ balena.models.billing.downloadInvoice(orgId, '0000').then(function(stream) {
     * [.getEmail()](#balena.auth.getEmail) ⇒ <code>Promise</code>
     * [.logout()](#balena.auth.logout) ⇒ <code>Promise</code>
     * [.register(credentials)](#balena.auth.register) ⇒ <code>Promise</code>
+    * [.verifyEmail(verificationPayload)](#balena.auth.verifyEmail) ⇒ <code>Promise</code>
+    * [.requestVerificationEmail()](#balena.auth.requestVerificationEmail) ⇒ <code>Promise</code>
 
 <a name="balena.auth.twoFactor"></a>
 
@@ -7740,6 +7744,44 @@ balena.auth.register({
 	if (error) throw error;
 	console.log(token);
 });
+```
+<a name="balena.auth.verifyEmail"></a>
+
+#### auth.verifyEmail(verificationPayload) ⇒ <code>Promise</code>
+**Kind**: static method of [<code>auth</code>](#balena.auth)  
+**Summary**: Verifies an email  
+**Access**: public  
+**Fulfil**: <code>String</code> - session token  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| verificationPayload | <code>Object</code> | in the form of email, and token |
+| verificationPayload.email | <code>String</code> | the email |
+| verificationPayload.token | <code>String</code> | the verification token |
+
+**Example**  
+```js
+balena.auth.verifyEmail({
+	email: 'johndoe@gmail.com',
+	token: '5bb11d90eefb34a70318f06a43ef063f'
+}).then(function(jwt) {
+	console.log(jwt);
+});
+```
+<a name="balena.auth.requestVerificationEmail"></a>
+
+#### auth.requestVerificationEmail() ⇒ <code>Promise</code>
+This will only work if you used [login](#balena.auth.login) to log in.
+
+**Kind**: static method of [<code>auth</code>](#balena.auth)  
+**Summary**: Re-send verification email to the user  
+**Access**: public  
+**Fulfil**: <code>string</code> - returns with 'OK' status when successful  
+**Example**  
+```js
+balena.auth.requestVerificationEmail().then(function() {
+	console.log('Requesting verification email operation complete!');
+})
 ```
 <a name="balena.logs"></a>
 
