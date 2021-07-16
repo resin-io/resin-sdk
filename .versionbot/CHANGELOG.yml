@@ -1,4 +1,17 @@
 - commits:
+    - subject: Add email verification & email request methods
+      hash: dcdf3277a49b20f5d496f273265e6e9b67680291
+      body: ''
+      footer:
+        Change-Type: minor
+        change-type: minor
+        Signed-off-by: Nitish Agarwal 1592163+nitishagar@users.noreply.github.com
+        signed-off-by: Nitish Agarwal 1592163+nitishagar@users.noreply.github.com
+      author: Nitish Agarwal
+      nested: []
+  version: 15.45.0
+  date: 2021-07-16T06:11:49.184Z
+- commits:
     - subject: 'typings: Add the subscription.is_active computed term'
       hash: 7466c8fe384d2c7603460d1c7c3339302eeefd1f
       body: ''
